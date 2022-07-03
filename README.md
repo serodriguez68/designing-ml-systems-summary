@@ -29,8 +29,6 @@ This book can be navigated in two ways:
 
 *2. Book navigation from the perspective of the iterative process to build ML systems*
 
-![](README.assets/Pasted%20image%2020220703112402.png)
-
 ## Table of Content
 
 **[Chapter 1: Overview of ML Systems](01-overview-of-ml-systems.md)**
@@ -40,6 +38,7 @@ This book can be navigated in two ways:
   - Typical ML use cases
 - ML in research vs production
 - ML systems vs traditional software
+
 
 **[Chapter 2: Project objectives, requirements and framing](02-project-objectives-requirements-and-framing.md)**
 - The relationship between business and ML objectives 
