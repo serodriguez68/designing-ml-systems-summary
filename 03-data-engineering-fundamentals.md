@@ -6,7 +6,6 @@ This chapter begins by highlighting the criticality of data through philosophica
 
 After that, the chapter systematically covers the different dimensions of "data in ML systems". Knowing the different dimensions will allow ML Engineers to understand systems better and make better choices.
 
-[TOC]
 
 # Quality of the algorithm vs quality and quantity of the data
 
@@ -14,7 +13,7 @@ After that, the chapter systematically covers the different dimensions of "data 
 
 - The debate is still going. However, no one can deny the quality and quantity of the data is essential for now. This is why the most fundamental needs for machine learning are all data related and unrelated to model training.
 
-<img src="03-data-engineering-fundamentals.assets/data-science-hierarchy-of-needs.png" alt="data-science-hierarchy-of-needs" style="width: 50%;" />
+![data-science-hierarchy-of-needs](03-data-engineering-fundamentals.assets/data-science-hierarchy-of-needs.png)
 
 *The data science hierarchy of needs. Adapted from an image by Monica Rogati*
 
@@ -187,11 +186,10 @@ How do we pass data between different processes that don't share memory?
   - Complex call graphs graphs can easily get created introducing reliability issues. If one service goes down, it takes down many with it.
   - Data passing through the network can slow down the entire system.
 
+![complex-call-graph](03-data-engineering-fundamentals.assets/complex-call-graph.png)
 
 
-<img src="03-data-engineering-fundamentals.assets/complex-call-graph.png" alt="complex-call-graph" style="width:60%;" />
-
-​	*Just 3 services depending on each other can create a complex call graph*
+*Just 3 services depending on each other can create a complex call graph*
 
 
 
