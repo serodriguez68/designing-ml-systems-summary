@@ -3,8 +3,6 @@
 
 # When to use ML (and when not to)
 
-
-
  ## Problem characteristics needed for ML solutions to work
 
 Some problems tend to be a better fit than others for ML solutions. Even in cases where both traditional software engineering and ML are viable options, ML may not be the optimal solution.
@@ -12,7 +10,6 @@ Some problems tend to be a better fit than others for ML solutions. Even in case
 The book contains the following definition of what a (supervised) ML system generally does. In order for a problem to be  solvable by ML, it requires certain characteristics encoded in the definition.
 
 > Machine learning is an approach to (2) learn complex patterns from (1) existing data and use these patterns to make (3) predictions on (4) unseen data . 
-
 
 
 **1. Existing data: data is available or it is possible to collect it.** 
@@ -24,7 +21,6 @@ If you don't have sufficient data and you don't have a mechanism to gather it, t
 - **Fake it till you make it** is also popular among companies: launch a product that serves predictions made by humans, instead of ML models, with the hope of using the generated data to train ML models later. 
 
 
-
 **2. Complex patterns: there are patterns to learn, and they are complex.**
 
 - If you have data but there is no pattern to learn, then an ML approach doesn't make sense. For example, it doesn't make sense to build an ML system to predict the outcome for a fair die. 
@@ -32,12 +28,10 @@ If you don't have sufficient data and you don't have a mechanism to gather it, t
 - If there are patterns but they are simple, it probably makes more sense to use a pure software engineering solution for the problem (e.g. don't build an ML system to look for zip codes based on address, just use a lookup table).
 
   
-
 **3. The problem can be framed as a prediction problem.**
 
 - Supervised ML models make predictions. If the whole problem  (or part of it) cannot be framed as a prediction problem, supervised ML is not the right tool.
 - Many computationally intensive problems are getting reframed as prediction problems. An example of this is light rendering in video games. Instead of doing the full expensive computation of what the lighting should be exactly, a regression ML model can be used to get a "good enough" approximation. In this case training the model is cheaper than doing the calculation.
-
 
 
 4. **Unseen data shares patterns with the train data.**
@@ -68,7 +62,7 @@ ML is being used both for **consumer** facing applications and **enterprise** in
   - Churn prediction:  Acquiring a new customer is 5 to 25 times more expensive than retaining one.
   - Brand monitoring: Monitor the sentiment of the public in social media towards your brand. 
 
-<img src="01-overview-of-ml-systems.assets/state-of-enterprise-ml.png" alt="state of enterprise-ml" style="width:65%;" />
+![state-of-enterprise-ml](01-overview-of-ml-systems.assets/state-of-enterprise-ml.png)
 
 
 
@@ -114,9 +108,6 @@ Challenges:
 - How to test that a data sample is good or bad for the system?
 - How to deploy a trained model with millions of parameters that requires gigabytes of RAM? How to do so if it needs to be deposed on the edge?
 - How to monitor and debug deployed models considering they may be hard to interpret?
-
-
-
 
 
 
