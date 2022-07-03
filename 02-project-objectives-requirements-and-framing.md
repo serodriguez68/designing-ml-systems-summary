@@ -57,7 +57,7 @@ There are two things to consider when framing a problem: (1) the type of ML task
 
 ## Types of supervised ML Tasks
 
-![[supervised-ml-task-types.png]]
+![supervised-ml-task-types](02-project-objectives-requirements-and-framing.assets/supervised-ml-task-types.png)
 
 * In classification, the fewer the clases there are, the simpler the problem. Binary classifiers are the simplest of all and they are widely used by ML practitioners.
 * Multi-class: there are more than 2 labels to choose from but each observation can only be assigned one label.
