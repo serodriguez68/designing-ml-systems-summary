@@ -1,10 +1,8 @@
 # 1 - Overview of ML Systems
 
-
 # When to use ML (and when not to)
 
  ## Problem characteristics needed for ML solutions to work
-
 Some problems tend to be a better fit than others for ML solutions. Even in cases where both traditional software engineering and ML are viable options, ML may not be the optimal solution.
 
 The book contains the following definition of what a (supervised) ML system generally does. In order for a problem to be  solvable by ML, it requires certain characteristics encoded in the definition.
@@ -42,7 +40,6 @@ If you don't have sufficient data and you don't have a mechanism to gather it, t
 
 
 ## Problem characteristics that will make ML solutions especially useful
-
 These are not necessary characteristics, but having one or multiple of them make it much more likely that an ML approach will succeed for a problem. 
 
 1. **It is a repetitive task:**  if a task is repetitive, patterns will be repeated multiple times and the ML models will be able to learn better.
@@ -53,7 +50,6 @@ These are not necessary characteristics, but having one or multiple of them make
 
 
 ## Typical ML use cases
-
 ML is being used both for **consumer** facing applications and **enterprise** internal applications. Consumer ML applications is growing; however, as of 2022, the vast majority of applications is still in the enterprise space.
 
 - In **consumer** applications latency tends to be more important than accuracy. Increases in latency may cause the user to bounce from our app. Consumers also tend to be more forgiving with bad predictions in non-critical applications like recommending a movie or bad tagging of a photo.
@@ -67,7 +63,6 @@ ML is being used both for **consumer** facing applications and **enterprise** in
 
 
 # ML in research vs production
-
 Research ML and production ML are different. It is important to be aware of the differences to avoid the pitfalls that arise from trying to use a research mentality to production models.
 
 |                        | Research                                                     | Production                                             |
@@ -97,7 +92,6 @@ Research ML and production ML are different. It is important to be aware of the 
 
 
 # ML systems vs traditional software
-
 On the surface, bringing SWE best practices to ML engineering is a good idea. However, it is not that simple. SWE systems keep data and code separate by design and the efforts of versioning, testing, deploying and monitoring are focused on the  **code** artefacts.  
 
 ML systems are part code, part data and part artefacts created from the two. **All of these need to be versioned,  tested, deployed and monitored.**

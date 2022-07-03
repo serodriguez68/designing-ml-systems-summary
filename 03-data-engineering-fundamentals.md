@@ -1,14 +1,10 @@
 # 3 - Data Engineering Fundamentals
-
-
-
 This chapter begins by highlighting the criticality of data through philosophical discussion on "data vs algorithm, which is more important?".
 
 After that, the chapter systematically covers the different dimensions of "data in ML systems". Knowing the different dimensions will allow ML Engineers to understand systems better and make better choices.
 
 
 # Quality of the algorithm vs quality and quantity of the data
-
 - There is a big debate on whether the quality of ML in the future will continue to be driven by the quality and quantity of the data (as it has been so far) or by the quality of the training algorithms. People in the latter camp think that with the increase in compute power, smarter and more powerful algorithms will start to appear and they will make up for lower quality and quantity of data.
 
 - The debate is still going. However, no one can deny the quality and quantity of the data is essential for now. This is why the most fundamental needs for machine learning are all data related and unrelated to model training.
@@ -19,7 +15,6 @@ After that, the chapter systematically covers the different dimensions of "data 
 
 
 # Data Sources 
-
 Data to power ML systems usually comes from different sources.  Sources can be categorised as follows:
 
 - **User input data:**  very varied in format: text, images, videos, files.  Malformed data is very common.
@@ -35,11 +30,9 @@ Data to power ML systems usually comes from different sources.  Sources can be c
 - **Second-party data:** data that other company collects on their customers that is made available to you.
 
 - **Third-party data:** data collected by companies on the public who aren't their customers. For example, apps that track all behaviour on the phone, even if they haven't opened an account.
-
   
 
 # Data Formats
-
 - The choice of format impacts human readability, speed of retrieval, speed of transmission and cost of storage.
 
 - When deciding the data formats to use, think about how the data will be used in the future and choose a format that makes sense.
@@ -55,26 +48,20 @@ Data to power ML systems usually comes from different sources.  Sources can be c
 
   *Samples of popular data formats*
 
-  
 
 ## JSON
-
 - Extremely popular. So popular, that the pain that it causes is felt everywhere.
 - Good readability and very flexible.
 - When you commit the data you implicitly commit to a schema that the reader will need to assume. 
 - Retrospectively changing the schema of the data that was already stored is very painful.
 
 
-
 ## Text versus Binary Format
-
 - Text formats are human readable, but larger in size. This means slower to transmit and retrieve.
 - Binary formats are more compact but are not readable. Compactness means faster transmission, faster retrieval and smaller disk size.
 
 
-
 ## Row-major vs Column-major formats
-
 ![row-major-vs-column-major](03-data-engineering-fundamentals.assets/row-major-vs-column-major.png)
 
 - **Row-major:** 
@@ -90,7 +77,6 @@ Data to power ML systems usually comes from different sources.  Sources can be c
 
 
 # Data Models
-
 SQL vs NoSQL data models is a well documented topic so we are not going to go deep into it. The key data models are:
 
 - **Relational data models**: schema is determined upfront. 
@@ -110,9 +96,7 @@ SQL vs NoSQL data models is a well documented topic so we are not going to go de
 _*More on the data warehouse VS data lake topic in the ETL section_
 
 
-
 # Database Engines
-
 - Typically databases are either optimised for **transactional processing** (i.e. online transactional processing OLTP) or **analytical processing** (i.e. online analytics processing OLAP).
 
 - OLTP databases are typically ACID databases that are very good at data integrity, reliability and high-volume transactional operations. They are also typically row-major databases in which operations that involve a single row are very efficient.
@@ -135,26 +119,21 @@ _*More on the data warehouse VS data lake topic in the ETL section_
 
 
 # Data Processing (ETLs)
-
 *Extract* from different data sources, *transform* into the desired format and *load* transformed data into the desired destination (e.g. a database, a file or data warehouse).
 
 ##  The Extracting Phase
-
 - Validate your data and reject anything that doesn't meet your requirements. Validating and rejecting early will save you a lot of work downstream.
 - If a lot of data is rejected, you may need to notify the sources.
 
 ## The Transform Phase
-
 - Join data from multiple sources.
 - Standardise values and ranges. For example, unify "Male" and "Female" vs "M" and "F"
 - More validation, transpose, deduplicate, sort, aggregate, derive new features.
 
 ## The Load Phase
-
 - How and how often to load transformed data into the target destination. 
 
 ## The rise and fall of data lakes
-
 - Finding it difficult to keep data in a structured format, some companies followed this idea: “Why not just store all raw data in a data lake so we don’t have to deal with schema changes? Whichever application needs data can just pull out raw data from there and process it.”  This is sometimes called *extract, load, transform (ELT)*.
 
 - This paradigm is losing traction because it is very inefficient to search through massive amounts of raw data to get the data you want. It is also very hard for the readers to keep up with the implied schemas of different raw data formats.
@@ -164,22 +143,16 @@ _*More on the data warehouse VS data lake topic in the ETL section_
   
 
 # Modes of Dataflow
-
 How do we pass data between different processes that don't share memory?
 
-
-
 ## Data passing through databases
-
 - Process A writes data into a database, Process B reads data from the same database.
 - Two problems with this:
   - Requires both processes to be connected to the same DB and share a schema. This is not possible if the DB is for example owned by different companies.
   - Several processes reading and writing from the same DB can make the queries slow. This is unsuitable for apps with strict latency requirements (i.e. almost all consumer facing apps).
 
 
-
 ## Data passing through services synchronously
-
 - Data passing through API calling (REST or RPC). Typical in micro-service architectures.
 - Allows data passing between services in different companies.
 - Problems with this:
@@ -194,7 +167,6 @@ How do we pass data between different processes that don't share memory?
 
 
 ## Data passing through real-time transport (events)
-
 - Request-driven architectures works well for systems that rely more on logic than on data. Event-driven architectures works better for systems that are data-heavy.  This is why real-time transport is very common for ML in production.
 - The two most common subtypes of real-time transport are: **pub-sub** and **message queues.**
 - **Pub-sub:** Services publish events to a topic. The service producing the data does not care about who is going to consume it. Examples are Kafka and Kinesis.
@@ -203,7 +175,6 @@ How do we pass data between different processes that don't share memory?
 
 
 # Batch Processing vs Stream Processing
-
 - **Batch processing of data** in ML production systems is typically used for calculating features using non-real time data (aka historical data) that has been stored in your data warehouse or data lake. 
   - These features are often called **static features** or **batch features** because they don't need to change in real time. For example, it is ok to recalculate the average driver rating once a day.
   - MapReduce and Spark are examples of batch processing engines.

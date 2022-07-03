@@ -1,5 +1,4 @@
-# Designing Machine Learning Systems - Notes
-
+# Designing Machine Learning Systems
 This is a summary of [Designing Machine Learning Systems](https://www.oreilly.com/library/view/designing-machine-learning/9781098107956/) by Chip Huyen. All credit to her and O'Reilly. 
 
 I took these note for my own learning and future reference. I'm ok with PRs to improve sections.
@@ -13,7 +12,6 @@ I took these note for my own learning and future reference. I'm ok with PRs to i
 
 
 # Navigating this Book
-
 This book can be navigated in two ways: 
 
 1. From the perspective of the components of an ML system.
