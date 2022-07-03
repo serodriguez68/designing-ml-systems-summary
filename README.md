@@ -5,14 +5,12 @@ This is a summary of [Designing Machine Learning Systems](https://www.oreilly.co
 I took these note for my own learning and future reference. I'm ok with PRs to improve sections.
 
 
-
 **Context before you read this book**
 
 - As of 2022, the vast majority of ML applications in production are **supervised ML** models. This book focuses almost exclusively on putting supervised ML models in production.
 
 - This book won't teach you how to do ML modelling. Furthermore it assumes that you have at least a high level understanding of ML modelling. 
 
-  
 
 # Navigating this Book
 
@@ -23,15 +21,16 @@ This book can be navigated in two ways:
 
 
 ![components-of-an-ml-system](README.assets/components-of-an-ml-system.png)
+
 *1. Book navigation from the perspective of the components of an ML system*
 
 
-![iterative-process|500](README.assets/iterative-process.png)
+![Iterative Process](README.assets/iterative-process.png)
+
 *2. Book navigation from the perspective of the iterative process to build ML systems*
 
 
 ## Table of Content
-
 
 **[Chapter 1: Overview of ML Systems](01-overview-of-ml-systems.md)**
 - When to use ML (and when not to)
@@ -48,7 +47,6 @@ This book can be navigated in two ways:
 - Framing of ML Problems in way that makes your job easier.
   - Types of supervised ML Tasks
   - Objective Function Framing in Multi-objective Applications
-
 
 
 **[Chapter 3: Data Engineering Fundamentals](03-data-engineering-fundamentals.md)**
