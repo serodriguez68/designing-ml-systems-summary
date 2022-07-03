@@ -21,14 +21,12 @@ This book can be navigated in two ways:
 1. From the perspective of the components of an ML system.
 2. From the perspective of the never-ending iterative process required to design, operate and continually improve an ML system in production.
 
-![components-of-an-ml-system](components-of-an-ml-system.png)
 
+![components-of-an-ml-system](README.assets/components-of-an-ml-system.png)
 *1. Book navigation from the perspective of the components of an ML system*
 
 
-![iterative-process|500](iterative-process.png)
-
-
+![iterative-process|500](README.assets/iterative-process.png)
 *2. Book navigation from the perspective of the iterative process to build ML systems*
 
 
