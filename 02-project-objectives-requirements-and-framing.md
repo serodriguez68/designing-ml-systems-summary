@@ -1,8 +1,6 @@
 # 2 - Project objectives, requirements and framing
 
-[TOC]
-
-Once you have determined that an ML solution is feasible for your problem (as described in [chapter 1][ch1]), it is time to align the **business** objectives with the **ml objectives**  and define operational **requirements**  that the system needs to satisfy.
+Once you have determined that an ML solution is feasible for your problem (as described in [chapter 1](01-overview-of-ml-systems.md)), it is time to align the **business** objectives with the **ml objectives**  and define operational **requirements**  that the system needs to satisfy.
 
 Additionally, this chapter also covers how  **problem framing** can affect how easy or hard building and maintaining your solution will be.
 
@@ -11,7 +9,8 @@ Additionally, this chapter also covers how  **problem framing** can affect how e
 # The relationship between business and ML objectives 
 
 - Companies don't care about fancy ML metrics like `accuracy`, `precision`, `recall`, `F1`, etc. ML projects where data scientist become too focused on hacking ML metrics without paying attention to business metrics tend to fail.  For an ML project to succeed long term within a business organisation, it is crucial to **tie the performance of an ML system to some business performance metrics** (e.g. revenue, monthly active users, etc).
-- **Mapping business to ML objectives is easier for certain ML applications than for others.** For example,  the business impact of fraud detection systems in financial applications is very clear and easy to measure. This mapping is much less obvious in, for example, ML systems used to detect potential cyber-security threats. Unsurprisingly, ML applications that have easier mappings (like fraud detection) are also [the most common types of enterprise ML applications][ml-usecases].
+- **Mapping business to ML objectives is easier for certain ML applications than for others.** For example,  the business impact of fraud detection systems in financial applications is very clear and easy to measure. This mapping is much less obvious in, for example, ML systems used to detect potential cyber-security threats. Unsurprisingly, ML applications that have easier mappings (like fraud detection) are also [the most common types of enterprise ML applications](01-overview-of-ml-systems.md#Typical%20ML%20use%20cases)
+
 - Many companies **create their own metrics to map business metrics to ML metrics**. For example, Netflix measures the performance of their recommender system using take-rate : the number of quality plays divided by the number of recommendations a user sees. The higher the take-rate, the better the recommender system. 
 
 
@@ -39,7 +38,7 @@ There are many requirements an ML system can have. However, you probably want to
 ### Maintainability
 
 - People from many different backgrounds work in a single ML System (ML engineers, devOPs engineers, SMEs) etc. It is important to structure the workflow in a way that every group can work with the tools they are comfortable with as opposed to one group forcing a set of tools for everybody.
-- Code should be documented, data and artifacts should be versioned.
+- Code should be documented, data and artefacts should be versioned.
 - More on this topic in the "Team Structure section in Chapter 11". 
 
 ### Adaptability 
@@ -58,9 +57,7 @@ There are two things to consider when framing a problem: (1) the type of ML task
 
 ## Types of supervised ML Tasks
 
-<img src="02-project-objectives-requirements-and-framing.assets/supervised-ml-task-types.png" alt="supervised ml task types" style="width:50%;" />
-
-![[supervised-ml-task-types.png|100]]
+![[supervised-ml-task-types.png]]
 
 * In classification, the fewer the clases there are, the simpler the problem. Binary classifiers are the simplest of all and they are widely used by ML practitioners.
 * Multi-class: there are more than 2 labels to choose from but each observation can only be assigned one label.
@@ -104,17 +101,16 @@ A regression model can easily be framed as a classification model and vice versa
 
   - Use a set of label-specific binary classifiers that determine whether a given label should be assigned to a given observation. If several classifiers say "yes", then you have a multi-label observation.
 
-    
 
 ### Example of why framing matters
 
 The example below shows how a framing can make or break your project. The task is to predict which app is the user most likely to open next. The same problem is framed as a classification task and a regression task.
 
-![image-20220619212204380](02-project-objectives-requirements-and-framing.assets/image-20220619212204380.png)
+![bad framing example](02-project-objectives-requirements-and-framing.assets/bad-framing-example.png)
 
 The classification framing fails miserably when a new app is installed because it requires the model to be retrained.
 
-![image-20220619212227484](02-project-objectives-requirements-and-framing.assets/image-20220619212227484.png)
+![good framing example](02-project-objectives-requirements-and-framing.assets/good-framing-example.png)
 
 The framing as a regression task by introducing app features to predict an arbitrary "next use score" between 0 and 1, eliminates the need for retraining when a new app is installed. The only task that is needed in this case is extracting the `app features` vector and then use the same model.
 
@@ -155,8 +151,3 @@ Alternatively you can train two independent models: one to predict `quality_scor
 >In general, when there are multiple objectives, it’s a good idea to decouple them first because it makes model development and maintenance easier. First, it’s easier to tweak your system without retraining models, as previously explained. Second, it’s easier for maintenance since different objectives might need different maintenance schedules. 
 
 - In this example, the decoupling allows us to update or retrain the `quality_model` more without affecting the engagement one.
-
-
-
-[ch1]: ./01-overview-of-ml-systems.md	"Chapter 1 overview of ml systems"
-[ml-usecases]: ./01-overview-of-ml-systems.md#typical-ml-use-cases	"State of enterprise ML"
