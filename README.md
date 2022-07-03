@@ -56,3 +56,13 @@ This book can be navigated in two ways:
 - Data processing ETLs
 - Modes of dataflow:  passing data through DBs vs passing through services vs passing through events
 - Batch processing vs stream processing
+
+**[[04-training-data.md|Chapter 4: training data]]**
+Covers different techniques for creating good training data.
+- Sampling techniques to select data for training
+- How to tackle common challenges with training data:
+	- Labelling problems
+	- Class imbalance problems
+	- Lack of data problems and data augmentation
+
+
