@@ -108,13 +108,12 @@ Hand labelling is full of problems, many of which have no good solution. If your
 Some problems have **natural ground  truth labels** that can be automatically derived **or approximated** by the system.  
 - Some problems have stronger natural labels than others. 
 - Label approximation can either be done using **explicit** or **implicit**  labelling. Explicit labelling means that we ask the user to give us the label in some way.
-- Examples: 
-	- Strong natural labels: 
-		- ETA in google maps can be verified with the actual trip time. 
-		- Stock price prediction can be verified. 
-	- Weaker natural labels (usually need to be approximated):
-		- Recommender systems typically allow for natural labels to be *approximated* by recording if a suggestion was taken (positive label) or if wasn't taken within a defined time window (implicit negative label).
-		- In Newsfeed ranking problems, natural labels can be *approximated* by adding a like and dislike button. This is a case of explicit approximation.
+- Examples of strong natural labels: 
+	- ETA in google maps can be verified with the actual trip time. 
+	- Stock price prediction can be verified. 
+- Examples of weaker natural labels (usually need to be approximated):
+	- Recommender systems typically allow for natural labels to be *approximated* by recording if a suggestion was taken (positive label) or if wasn't taken within a defined time window (implicit negative label).
+	- In Newsfeed ranking problems, natural labels can be *approximated* by adding a like and dislike button. This is a case of explicit approximation.
 - Companies tend to choose working on problems with natural labels while they are getting started with ML because they tend to be easier and cheaper problems to work on.
 
 ### Feedback loop length
@@ -123,20 +122,25 @@ In problems that have natural labels, the feedback loop is the time from when a 
 - Problems with shorter feedback loops are easier to work with and produce systems that adapt better to changing requirements and data distributions.
 	- This is true for all problems. If you can get labels faster, your life will be easier.
 
-#### Problems with strong labels
+#### Problems that have strong labels
 When dealing with problems that have strong natural labels, the length of this loop is usually determined by the nature of the problem. For example:
 - Stock predictions can be verified within minutes.
 - Google maps' ETA predictions can be verified in the order of hours.
 - Fraud detection has a long natural feedback loop because the dispute process fully terminates months after a transaction is issued.
 
-#### Problems where we approximate the labels
+#### Problems that need label approximation
 Trying to approximate a label typically brings some trade-off decisions to make.
-- **Choosing the type of user feedback for approximation:** 
-	- You can use different signals at different points of a user journey to approximate a label.  Different signals have different **volume, strength and loop length.**
-	- For example in a product recommendation system you can use *"clicked on the product"* to generate a label. Alternatively you can use the *"bought the product"* signal. Clicks will happen more often and have a tighter feedback loop, but purchases are a much more valuable signal.
-- **Choosing the time window for implicit approximation:**
-	- Problems in which we need to implicitly infer a label because something *didn't* happen are very common. In these problems we are usually faced with the decision of choosing a **time window** after which the label is assigned. Recommender systems are a typical example.
-	- Shorter time windows  = Shorter feedback loops + Higher mislabelling because the target action happened after the arbitrary time window limit.
+
+##### Choosing the type of user feedback for approximation
+You can use different signals at different points of a user journey to approximate a label.  Different signals have different **volume, strength and loop length.**
+
+For example in a product recommendation system you can use *"clicked on the product"* to generate a label. Alternatively you can use the *"bought the product"* signal. Clicks will happen more often (i.e. more data) and have a tighter feedback loop, but purchases are a much more valuable signal.
+
+There is no right decision here. You need to weight the tradeoffs and make a call.
+
+##### Choosing the time window for implicit approximation
+Problems in which we need to implicitly infer a label because something *didn't happen* are very common. In these  we usually need to choose a **time window** after which the negative label is assigned (e.g. User didn't watch the recommended movie).
+- Shorter time windows  = Shorter feedback loops + Higher mislabelling because the target action happened after the arbitrary time window limit.
 
 
 ## Handling the Lack of Labels
