@@ -76,9 +76,70 @@ random.choices(
 
 
 ### Reservoir sampling for sampling streams
+Creating a continuous sampled dataset from stream of data has these challenges:
+- You don't know the size of the population beforehand. However, following good practices, you probably want every sample in the dataset to have the same probability of being selected.
+- You can't keep adding new samples to the sample dataset forever. At some point you will run out of memory.
+- You must be able to stop the continuous sampling at any point in time and each element in the dataset must have been sampled with the correct probability.
 
-### Importance sampling
+The **reservoir sampling algorithm** allows you to continuously sample a dataset of `k` elements while overcoming the challenges above. `k` is limited by the amount of memory you have.
 
-# Labeling
+1. Put the first `k` elements into the reservoir. 
+2. For each incoming `nth` element, generate a random number `i` such that `1 ≤ i ≤ n`. 
+3. If `1 ≤ i ≤ k`: replace the `ith` element in the reservoir with the `nth` element. Else, do nothing. 
+
+
+# Labelling
+Good labelling is a critical part. Some companies even have in-house labelling teams (e.g. Tesla). 
+
+Hand labelling is full of problems, many of which have no good solution. If your problem allows, circumvent these problems by either using [Natural labels](#Natural%20labels) or the techniques described in [Handling the Lack of Labels](#Handling%20the%20Lack%20of%20Labels) .
+
+## Hand labels
+- **Problem 1: Hand labelling is expensive**. Especially when you need subject matter experts to produce the labels (like medical Doctors classifying X-rays).
+- **Problem 2: Hand labelling poses a threat to data privacy.** Someone will need to have access to non aggregated  data. This makes it harder to outsource labelling and adds a security assurance burden.
+- **Problem 3: Hand labelling is slow.** Slow labelling leads to slow iteration speeds, which in turn makes your models less adaptive to changing environments. The longer the labelling process takes, the more you existing model performance will degrade.
+- **Problem 4: Label multiplicity**: Having different annotators label data from different data sources can lead to label ambiguity. 
+	- Disagreements between annotators are extremely common.
+	- The higher the level of domain expertise required, the higher de potential for disagreements.
+	- **Partial Solution:** The best way to minimise this is to put great care in providing annotators with a clear problem definition and instructions.
+- **Problem 5: Data lineage tends to be forgotten:** For example, you train a good model using 100K samples with good labelling quality.  Then you outsource another 1M samples for labelling. Unfortunately, the quality of the outsourced labels is poor (but you don't know it). Then you mix the data and train the same model with 1.1M samples. Finally you discover that your model performance has decreased as a consequence of the poor labelling. To make things worse, you cannot recover from it because you have mixed the data.
+	- **Solution:** Use *data lineage* practices. Keep track of the origin of each of your data samples as well as the origin of their labels. Tracking this can help you debug data problems.
+
+## Natural labels
+Some problems have **natural ground  truth labels** that can be automatically derived **or approximated** by the system.  
+- Some problems have stronger natural labels than others. 
+- Label approximation can either be done using **explicit** or **implicit**  labelling. Explicit labelling means that we ask the user to give us the label in some way.
+- Examples: 
+	- Strong natural labels: 
+		- ETA in google maps can be verified with the actual trip time. 
+		- Stock price prediction can be verified. 
+	- Weaker natural labels (usually need to be approximated):
+		- Recommender systems typically allow for natural labels to be *approximated* by recording if a suggestion was taken (positive label) or if wasn't taken within a defined time window (implicit negative label).
+		- In Newsfeed ranking problems, natural labels can be *approximated* by adding a like and dislike button. This is a case of explicit approximation.
+- Companies tend to choose working on problems with natural labels while they are getting started with ML because they tend to be easier and cheaper problems to work on.
+
+### Feedback loop length
+In problems that have natural labels, the feedback loop is the time from when a prediction is offered to when we are able to derive or approximate the ground-truth label of that sample.
+- If ground-truth labels is available within minutes, this is considered a short feedback loop. 
+- Problems with shorter feedback loops are easier to work with and produce systems that adapt better to changing requirements and data distributions.
+	- This is true for all problems. If you can get labels faster, your life will be easier.
+
+#### Problems with strong labels
+When dealing with problems that have strong natural labels, the length of this loop is usually determined by the nature of the problem. For example:
+- Stock predictions can be verified within minutes.
+- Google maps' ETA predictions can be verified in the order of hours.
+- Fraud detection has a long natural feedback loop because the dispute process fully terminates months after a transaction is issued.
+
+#### Problems where we approximate the labels
+Trying to approximate a label typically brings some trade-off decisions to make.
+- **Choosing the type of user feedback for approximation:** 
+	- You can use different signals at different points of a user journey to approximate a label.  Different signals have different **volume, strength and loop length.**
+	- For example in a product recommendation system you can use *"clicked on the product"* to generate a label. Alternatively you can use the *"bought the product"* signal. Clicks will happen more often and have a tighter feedback loop, but purchases are a much more valuable signal.
+- **Choosing the time window for implicit approximation:**
+	- Problems in which we need to implicitly infer a label because something *didn't* happen are very common. In these problems we are usually faced with the decision of choosing a **time window** after which the label is assigned. Recommender systems are a typical example.
+	- Shorter time windows  = Shorter feedback loops + Higher mislabelling because the target action happened after the arbitrary time window limit.
+
+
+## Handling the Lack of Labels
+
 
 # Class Imbalance
