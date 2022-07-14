@@ -144,6 +144,45 @@ Problems in which we need to implicitly infer a label because something *didn't 
 
 
 ## Handling the Lack of Labels
+This section covers 4 categories of techniques that have been developed to deal with the challenges of getting sufficient high-quality labels.
+
+Overview:
+![](04-training-data.assets/handling-lack-of-labels-overview.png)
+
+### Weak Supervision Labelling
+
+This youtube video explains several arrangements for weak supervision, including some iterative arrangements that are very interesting.
+https://www.youtube.com/watch?v=SS9fvo8mR9Y
+
+
+**The TL/DR of it is:**
+
+The idea of weak supervision is motivated by the assumption that systems trained using a lot of data tend to perform better than models with a small but perfect dataset; even if the labels you use for training are somewhat noisy. This is especially true if your model is a re-train or a fine-tune of some pre-trained model, like a previous iteration of the same model or doing transfer learning model (like a language model). 
+
+The high level steps are:
+1.You (or a subject matter expert) develop a set of heuristics to label data automatically using some simplifications. You wrap each of those heuristics inside a `labelling_function` (LF). Different heuristics might contradict each other and some might be better at labelling certain samples than others. All of this is ok.
+```python
+def labelling_function(example_note):
+  if "pneumonia" in example_note:
+	return true
+```
+- Some types labelling functions:
+	- Keyword heuristics: is a keyword in the sample?
+	- Regular expressions: does the sample match a regex?
+	- Database lookup: does the string contain a string that matches the list of dangerous diseases?
+	- Outputs from previously trained models. They can either be simple models trained on some small set of hand-labelled data or the output of a previous iteration of a model.
+2. You apply the set of labelling functions to the data you want to label.
+3. A tool like [Snorkel](https://github.com/snorkel-team/snorkel) will be able to take in all the different "label votes" produced by the labelling functions, learn the correlations between the them and output a probability vector of the label (e.g. [80% black, 10% green, 10%white]). Essential what Snorkel is doing is combining, de-noising and re-weightings the votes from  all LFs to obtain **the label likelihoods.** 
+4. You would then train your big model using the output probability vectors.
+
+- **Pros:**
+	- **No hand labels required:** In theory you don't need hand labels for weak supervision. However having a small sample of hand labels if recommended to check the accuracy of your LFs.
+	- **Privacy:** Weak supervision is very useful when your data has strict privacy requirements. You only need to see a few samples to create an LF, the rest can be done automatically.
+	- **Speed:** Labelling lots of data with LFs is very fast (when compared to hand labelling)
+	- **Adaptability:** when changes happen, you can just change your LF and reapply it on all of your data.  If you were hand labelling, you would need a full re-label. 
+	- LFs allow you to incorporate subject matter expertise and to **version it, reuse it and share it.**
+- **Cons:**
+	**- Too Noisy labels:** Sometimes labels can be too noisy to be useful. To make things worse, unless you have some small set of hand labelled data, you won't know how bad the noisy labels are.
 
 
 # Class Imbalance
