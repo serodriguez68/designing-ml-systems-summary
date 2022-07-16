@@ -144,7 +144,7 @@ Problems in which we need to implicitly infer a label because something *didn't 
 
 
 ## Handling the Lack of Labels
-This section covers 4 categories of techniques that have been developed to deal with the challenges of getting sufficient high-quality labels.
+This section covers 4 categories of techniques that have been developed to deal with the challenges of getting sufficient high-quality labels. You may use one or several of them at the same time.
 
 Overview:
 ![](04-training-data.assets/handling-lack-of-labels-overview.png)
@@ -185,4 +185,16 @@ def labelling_function(example_note):
 	**- Too Noisy labels:** Sometimes labels can be too noisy to be useful. To make things worse, unless you have some small set of hand labelled data, you won't know how bad the noisy labels are.
 
 
+### Semi-Supervision
+Conceptually, semi-supervision is using an initial set of labels as a seed for labelling more unlabelled data using some sort of method.
+
+Here are 3 examples of semi-supervision implementations:
+
+1. **Self-training**: use the seed of labelled data to train a model > use that model to produce labels for some unlabelled data > add samples with high raw probability to the training set > rinse and repeat until you are happy with your model's performance.
+3. **Labelling by clustering:** assume that the unlabelled data points that cluster close to labelled data points share the same label.
+4. **Perturbation:** It assumes that small perturbations to a sample shouldn't change its label. So you apply small perturbations to your training instances to generate new training instances. This can also be considered as a form of [Data Augmentation](#Data%20Augmentation).
+
+
 # Class Imbalance
+
+# Data Augmentation
