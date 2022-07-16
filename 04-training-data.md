@@ -194,6 +194,14 @@ Here are 3 examples of semi-supervision implementations:
 3. **Labelling by clustering:** assume that the unlabelled data points that cluster close to labelled data points share the same label.
 4. **Perturbation:** It assumes that small perturbations to a sample shouldn't change its label. So you apply small perturbations to your training instances to generate new training instances. This can also be considered as a form of [Data Augmentation](#Data%20Augmentation).
 
+### Transfer learning
+A model developed for a task is reused as a starting point for a model a model on a second task. The first task usually has cheap and abundant training data.  
+- Transfer learning is based on the idea that large neural models tend to be very robust against changes in task. For example, a language model for the English language trained on Wikipedia will be useful even if your NLP task has nothing to do with Wikipedia. 
+- Language models built on large corpuses are a typical examples of transfer learning (e.g. BERT).
+- Fine tuning the base model for your task can mean making small changes to the base model, such as continuing to train all or part of the model with your own data for your own task.
+- Transfer learning has gotten a lot of interest because it allows you to use for free models that could have cost tens of millions of dollars to train.
+- Usually the larger the pre-trained base model, the better its performance on downstream tasks.
+
 
 # Class Imbalance
 
