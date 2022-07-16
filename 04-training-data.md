@@ -202,6 +202,14 @@ A model developed for a task is reused as a starting point for a model a model o
 - Transfer learning has gotten a lot of interest because it allows you to use for free models that could have cost tens of millions of dollars to train.
 - Usually the larger the pre-trained base model, the better its performance on downstream tasks.
 
+### Active learning
+Active learning is based on the idea that there are some samples that are more valuable to label than others. For example, samples that are closer to the decision boundary are more valuable because they will allow your model to learn the boundary better.
+
+In active learning, your model will automatically tell you which samples you should go and label. Some examples of active learning implementations are:
+1. You apply your model to a set of unlabelled data and your model selects the samples with less certainty (e.g less raw probability) to be labelled and added to the training data.
+2. You apply ensemble of models to a set of unlabelled data and select the samples with less consensus for labelling.  The ensemble can be made of models trained on different slices of data, or with different hyperparams, or different models altogether. 
+3. Some active learning techniques allow your models to synthesise samples that are in the region of uncertainty. 
+4. Some companies apply active learning with the data being evaluated in production. If a model running in prod is not very certain about a sample it just saw, the sample is flagged for labelling.
 
 # Class Imbalance
 
