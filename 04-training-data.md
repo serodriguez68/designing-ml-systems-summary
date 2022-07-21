@@ -207,10 +207,26 @@ Active learning is based on the idea that there are some samples that are more v
 
 In active learning, your model will automatically tell you which samples you should go and label. Some examples of active learning implementations are:
 1. You apply your model to a set of unlabelled data and your model selects the samples with less certainty (e.g less raw probability) to be labelled and added to the training data.
-2. You apply ensemble of models to a set of unlabelled data and select the samples with less consensus for labelling.  The ensemble can be made of models trained on different slices of data, or with different hyperparams, or different models altogether. 
+2. You apply ensemble of models to a set of unlabelled data and select the samples with less consensus for labelling.  The ensemble can be made of models trained on different slices of data, or with different hyper-parameters, or different models altogether. 
 3. Some active learning techniques allow your models to synthesise samples that are in the region of uncertainty. 
 4. Some companies apply active learning with the data being evaluated in production. If a model running in prod is not very certain about a sample it just saw, the sample is flagged for labelling.
 
 # Class Imbalance
+- **Class imbalance in classification tasks** happen when there is a substantial difference in the number of samples in each class of the training data.
+- **Class imbalance in regression tasks** - An example: for the task of estimating the cost of a hospital bill, most of the data collected falls between in the  $100 to $1000 range and you have very little data for astronomical bills above $10K. If you do nothing, your model will tend to fit the range with more data better, even if it is at the cost of being very wrong in the high bill range.
+
+## Causes of Class Imbalance
+1. **Naturally imbalanced problems:** problems that are naturally heavily imbalanced are very common in the real world (e.g. cancer detection, fraud detection, any anomaly detection problem). To make things harder, in many of these problems predicting the minority classes correctly is **far more important** than predicting the majority ones (e.g. in cancer detection). This is the most common cause of class imbalance.
+2. **Imbalance caused by biased sampling:** your problem may not naturally be heavily imbalanced, but the way you sample your data may make your data **look**  imbalanced. For example, imagine you want to build a model that identifies if a Twee is SPAM. If you scrape public Twitter to build a homemade dataset you may find that only a very small percentage of Tweets are SPAM. This might not be the real distribution. Tour data **looks**  imbalanced because most SPAM tweets are taken down by Twitter's own algorithms before making them public. The section on [Sampling](#Sampling) has more info on how to avoid sampling pitfalls.
+3. **Imbalance caused labelling error:** annotators might read the instructions wrong and use one class far less than the others. This is the least common cause.
+
+## Why is Class Imbalance a Problem?
+If you don't do any tweaking, ML algorithms don't work as well in **heavily** imbalanced datasets as they do in balanced ones. Why?
+1. Your algorithms may have insufficient signal to learn the parameters that work for minority classes. Training on minority classes becomes to a few-shot learning problem.
+2. Your algorithms can get stuck during training in nonoptimal solutions that exploit simple heuristics like always returning the majority class. 
+3. The default behaviour of an ML algorithm is to treat a misclassification of any class equally with no way to encode class importance during training. This is problematic for tasks where the misclassification of a minority class can have catastrophic consequences.
+
+## Handling class imbalance
+
 
 # Data Augmentation
