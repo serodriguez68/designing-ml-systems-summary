@@ -138,16 +138,16 @@ For example in a product recommendation system you can use *"clicked on the prod
 
 There is no right decision here. You need to weight the tradeoffs and make a call.
 
-##### Choosing the time window for implicit approximation
-Problems in which we need to implicitly infer a label because something *didn't happen* are very common. In these  we usually need to choose a **time window** after which the negative label is assigned (e.g. User didn't watch the recommended movie).
-- Shorter time windows  = Shorter feedback loops + Higher mislabelling because the target action happened after the arbitrary time window limit.
-
-
 ## Handling the Lack of Labels
 This section covers 4 categories of techniques that have been developed to deal with the challenges of getting sufficient high-quality labels. You may use one or several of them at the same time.
 
 Overview:
 ![](04-training-data.assets/handling-lack-of-labels-overview.png)
+
+##### Choosing the time window for implicit approximation
+Problems in which we need to implicitly infer a label because something *didn't happen* are very common. In these  we usually need to choose a **time window** after which the negative label is assigned (e.g. User didn't watch the recommended movie).
+- Shorter time windows  = Shorter feedback loops + Higher mislabelling because the target action happened after the arbitrary time window limit.
+
 
 ### Weak Supervision Labelling
 
@@ -192,7 +192,7 @@ Here are 3 examples of semi-supervision implementations:
 
 1. **Self-training**: use the seed of labelled data to train a model > use that model to produce labels for some unlabelled data > add samples with high raw probability to the training set > rinse and repeat until you are happy with your model's performance.
 3. **Labelling by clustering:** assume that the unlabelled data points that cluster close to labelled data points share the same label.
-4. **Perturbation:** It assumes that small perturbations to a sample shouldn't change its label. So you apply small perturbations to your training instances to generate new training instances. This can also be considered as a form of [Data Augmentation](#Data%20Augmentation).
+4. **Perturbation:** It assumes that small perturbations to a sample shouldn't change its label. So you apply small perturbations to your training instances to generate new training instances. This can also be considered as a form of [Data Augmentation](#Perturbation).
 
 ### Transfer learning
 A model developed for a task is reused as a starting point for a model a model on a second task. The first task usually has cheap and abundant training data.  
@@ -222,11 +222,85 @@ In active learning, your model will automatically tell you which samples you sho
 
 ## Why is Class Imbalance a Problem?
 If you don't do any tweaking, ML algorithms don't work as well in **heavily** imbalanced datasets as they do in balanced ones. Why?
-1. Your algorithms may have insufficient signal to learn the parameters that work for minority classes. Training on minority classes becomes to a few-shot learning problem.
-2. Your algorithms can get stuck during training in nonoptimal solutions that exploit simple heuristics like always returning the majority class. 
-3. The default behaviour of an ML algorithm is to treat a misclassification of any class equally with no way to encode class importance during training. This is problematic for tasks where the misclassification of a minority class can have catastrophic consequences.
+1. Your algorithms may have insufficient signal to learn the parameters that work for minority classes. Training on minority classes becomes a few-shot learning problem.
+2. Your algorithms can get stuck during training in non-optimal solutions that exploit simple heuristics like always returning the majority class. 
+3. The default behaviour of an ML algorithm is to treat a misclassification of any class equally with no way to encode class importance during training. This is problematic for tasks where the misclassification of a minority class can have catastrophic consequences (e.g. cancer diagnosis in chest x-rays).
+
+Some tasks are more sensitive to class imbalance than others. In general, the more complex the problem, the more sensitive it is to imbalance. The opposite is also true, simple linearly separable problems are not sensitive to class imbalance. 
 
 ## Handling class imbalance
+Some might argue that you shouldn’t try to “fix” class imbalance if that’s how the data looks in the real world. They argue that a model should learn to handle that imbalance. However, developing a model that does a good job at that can be challenging, **so we still have to rely on special training techniques**.
+
+There are 3 high-level approaches to deal with class imbalance: (1) choosing the right metrics, (2) data-level methods and (3) algorithm-level methods.
+
+### Choosing the right metrics
+Using metrics that treat all classes equally is a bad idea when you have class imbalance because the metrics will be driven by the majority classes. This is especially bad when the majority class is not the class you care about. A typical case of a bad metric is using **overall** accuracy; for example, a CANCER detecting model capable of classifying 90% of the x-rays correctly tells us very little about its CANCER detecting capabilities, since most of the samples are NON-CANCER.
+
+A solution to this is to use class-specific metrics targeted on the class we care about  *Precision*, *recall* and *F1* are all class-specific metrics you can use.
+
+#### Thresholding 
+If the output of your classification model is continuous variable, like a probability, you can use a **threshold** to choose the precision and recall for your algorithm. This selection is actually informed by how much we care about the important class and how tolerant we can be with misclassifications of other classes.
+
+The two common tools used for this threshold selection are **ROC curves** and **precision-recall curves.**
+
+\* Note that you can easily frame a classification problem as a regression problem to enable the use of thresholds. 
+
+### Data-level methods: resampling
+Data-level methods modify the original distribution of the data to reduce the imbalance. *Resampling* is the most common family of techniques used for this. It includes *oversampling* (adding instances from the minority class) and *undersampling* (removing instances from the majority class).
+
+- **Random undersampling:** randomly remove instances from the majority class until you achieve the desired balance.
+- **Random oversampling:** randomly make copies of the minority class until you get a ratio you are happy with.
+- **Tomek links:** a technique for undersampling *low dimensional* data. Find pairs of datapoints with different class that are close to each other and remove the sample from the majority class.
+	- It helps the algorithm learn  a clearer decision boundary.
+	- It makes the model less robust as it doesn't get to learn the subtleties in the decision boundary.
+- **Synthetic minority oversampling technique (SMOTE):** create new minority class samples by doing convex (˜linear) combinations of minority class samples.
+-  **Tomek Links**, **SMOTE** and more fancy resampling techniques tend to be effective only in low-dimensional data. The techniques that rely on distance calculations get expensive to compute with higher dimensions.
+
+#### Resampling risks
+- **Never evaluate your model on resampled data**. Despite training it with a modified data distribution, you want to evaluate your model with data that follows the real distribution to get an idea of its  true performance.
+- Undersampling has the risk of throwing away important data.
+- Oversampling has the risk of promoting overfitting to the data. This is especially true if the oversampled samples are copies.
+
+#### Techniques to mitigate these risks
+- **Two-phase learning:** First train your model on undersampled balanced data. Then fine-tune the training using the original data.
+- **Dynamic Sampling:** oversample the low-performing classes and under-sample the high performing ones. This aims to show the model less of what it already knows and more of what it needs to learn better.
+
+### Algorithm-level methods
+Intuition: the loss function guides the learning process. We can modify the loss function to help the model deal with imbalance automatically during training.
+
+### Cost-sensitive learning
+Define a cost matrix where each entry `Cij` is the cost of class `i` getting classified as class `j`. If `i=j` the classification is correct and a 0 cost is usually used. Since learning looks for loss minimisation, the training process will put more emphasis in the misclassification of more expensive classes.
+
+This framing allows you to naturally incorporate domain knowledge like *"it is 20 times more costly to misclassify CANCER as NORMAL than the other way around"*. 
+
+### Class-balanced loss
+This is similar to cost-sensitive loss, but the weight (or cost) of misclassification is determined by the number of samples in each class.
+
+In it's vanilla form,  `Wi` (the weight for class `i`) is `1/N_samples_of_class_i`.  A more sophisticated approach can take into account overlap between existing samples an base the calculation on *effective number of samples.*
+
+### Focal loss
+Intuition: Incentivise the model to focus on samples that it is still having trouble calculating by giving more weight to samples whose probability of classification in the correct class is lower. See the book for the focal loss equation.
 
 
 # Data Augmentation
+Data augmentation is a family of techniques used to increase the amount of training data. Augmented data is often useful in making our models more robust against noise and adversarial attacks*.
+
+\* An **adversarial attack** is when someone crafts a production sample to trick an ML model into misclassifying something. For example, changing a few pixels in an image to get the image classified differently. Neural networks are particularly sensitive to noise.
+
+Data augmentation is standard in computer vision tasks and is becoming popular in NLP tasks. There are three main types of data augmentation: (1) simple label-preserving transformations, (2) perturbation , and (3) data synthesis. In each type, we’ll go over examples for both computer vision and NLP. 
+
+## Simple label-preserving transformations
+- **In computer vision:** randomly modify an image preserving its label. Think rotation, cropping, flipping, inverting, erasing part of an image. 
+- **In NLP:** replace a word in a sentence with a similar word that does not change the meaning of the sentence. You can select "similar" by using a synonym dictionary, a word net or  another word that has a similar word embedding;
+
+
+## Perturbation
+- **In computer vision:** Noisy samples can be created by either adding **random noise** or by a **search strategy** like Adversarial Augmentation. In Adversarial Augmentation, an algorithm finds the least number of changes it needs to do to a sample to change the label. You would then add that altered sample to your training data to make your model more robust.
+- **In NLP:** perturbation is less common in NLP because changing a word or adding noise will likely change the meaning of the sentence. 
+
+Perturbation can also be in the [Semi-Supervision](#Semi-Supervision) context.
+
+## Data synthesis
+- **In computer vision** a common technique is to generate new images by combining two images with different labels. This is called a *mixup*. For example if the DOG label is 0 and the CAT label is 1, you could create a mixup image that is half and half and whose label is 0.5.
+- **In NLP** string templates area a great and cheap way to generate lots of data. For example,  using the template *"Find me a \[CUISINE\] restaurant within \[NUMBER\] miles of \[LOCATION\]"* , plus  a database of CUISINES, plus some sensible parameter for NUMBER and LOCATION, you can generate thousands of samples.
+- Using Neural Networks to synthesise data is an exciting research area at the moment, but it is not popular in production yet.
