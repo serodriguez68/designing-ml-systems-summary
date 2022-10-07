@@ -212,12 +212,12 @@ In active learning, your model will automatically tell you which samples you sho
 4. Some companies apply active learning with the data being evaluated in production. If a model running in prod is not very certain about a sample it just saw, the sample is flagged for labelling.
 
 # Class Imbalance
-- **Class imbalance in classification tasks** happen when there is a substantial difference in the number of samples in each class of the training data.
+- **Class imbalance in classification tasks** happens when there is a substantial difference in the number of samples in each class of the training data.
 - **Class imbalance in regression tasks** - An example: for the task of estimating the cost of a hospital bill, most of the data collected falls between in the  $100 to $1000 range and you have very little data for astronomical bills above $10K. If you do nothing, your model will tend to fit the range with more data better, even if it is at the cost of being very wrong in the high bill range.
 
 ## Causes of Class Imbalance
 1. **Naturally imbalanced problems:** problems that are naturally heavily imbalanced are very common in the real world (e.g. cancer detection, fraud detection, any anomaly detection problem). To make things harder, in many of these problems predicting the minority classes correctly is **far more important** than predicting the majority ones (e.g. in cancer detection). This is the most common cause of class imbalance.
-2. **Imbalance caused by biased sampling:** your problem may not naturally be heavily imbalanced, but the way you sample your data may make your data **look**  imbalanced. For example, imagine you want to build a model that identifies if a Twee is SPAM. If you scrape public Twitter to build a homemade dataset you may find that only a very small percentage of Tweets are SPAM. This might not be the real distribution. Tour data **looks**  imbalanced because most SPAM tweets are taken down by Twitter's own algorithms before making them public. The section on [Sampling](#Sampling) has more info on how to avoid sampling pitfalls.
+2. **Imbalance caused by biased sampling:** your problem may not naturally be heavily imbalanced, but the way you sample your data may make your data **look**  imbalanced. For example, imagine you want to build a model that identifies if a Tweet is SPAM. If you scrape public Twitter to build a homemade dataset you may find that only a very small percentage of Tweets are SPAM. This might not be the real distribution. Tour data **looks**  imbalanced because most SPAM tweets are taken down by Twitter's own algorithms before making them public. The section on [Sampling](#Sampling) has more info on how to avoid sampling pitfalls.
 3. **Imbalance caused labelling error:** annotators might read the instructions wrong and use one class far less than the others. This is the least common cause.
 
 ## Why is Class Imbalance a Problem?
@@ -229,14 +229,14 @@ If you don't do any tweaking, ML algorithms don't work as well in **heavily** im
 Some tasks are more sensitive to class imbalance than others. In general, the more complex the problem, the more sensitive it is to imbalance. The opposite is also true, simple linearly separable problems are not sensitive to class imbalance. 
 
 ## Handling class imbalance
-Some might argue that you shouldn’t try to “fix” class imbalance if that’s how the data looks in the real world. They argue that a model should learn to handle that imbalance. However, developing a model that does a good job at that can be challenging, **so we still have to rely on special training techniques**.
+Some might argue that you shouldn’t try to “fix” class imbalance if that’s how the data looks in the real world. They argue that a model should learn to handle that imbalance. However, developing a model that does a good job under these conditions can be challenging, **so we still have to rely on special training techniques**.
 
 There are 3 high-level approaches to deal with class imbalance: (1) choosing the right metrics, (2) data-level methods and (3) algorithm-level methods.
 
 ### Choosing the right metrics
 Using metrics that treat all classes equally is a bad idea when you have class imbalance because the metrics will be driven by the majority classes. This is especially bad when the majority class is not the class you care about. A typical case of a bad metric is using **overall** accuracy; for example, a CANCER detecting model capable of classifying 90% of the x-rays correctly tells us very little about its CANCER detecting capabilities, since most of the samples are NON-CANCER.
 
-A solution to this is to use class-specific metrics targeted on the class we care about  *Precision*, *recall* and *F1* are all class-specific metrics you can use.
+A solution to this is to use class-specific metrics targeted on the class we care about.  *Precision*, *recall* and *F1* are all class-specific metrics you can use.
 
 #### Thresholding 
 If the output of your classification model is continuous variable, like a probability, you can use a **threshold** to choose the precision and recall for your algorithm. This selection is actually informed by how much we care about the important class and how tolerant we can be with misclassifications of other classes.
@@ -252,8 +252,8 @@ Data-level methods modify the original distribution of the data to reduce the im
 - **Random oversampling:** randomly make copies of the minority class until you get a ratio you are happy with.
 - **Tomek links:** a technique for undersampling *low dimensional* data. Find pairs of datapoints with different class that are close to each other and remove the sample from the majority class.
 	- It helps the algorithm learn  a clearer decision boundary.
-	- It makes the model less robust as it doesn't get to learn the subtleties in the decision boundary.
-- **Synthetic minority oversampling technique (SMOTE):** create new minority class samples by doing convex (˜linear) combinations of minority class samples.
+	- It makes the model less robust as it doesn't get to learn the nuances in the decision boundary.
+- **Synthetic minority oversampling technique (SMOTE):** create new minority class samples by doing convex (~linear) combinations of minority class samples.
 -  **Tomek Links**, **SMOTE** and more fancy resampling techniques tend to be effective only in low-dimensional data. The techniques that rely on distance calculations get expensive to compute with higher dimensions.
 
 #### Resampling risks
@@ -268,17 +268,17 @@ Data-level methods modify the original distribution of the data to reduce the im
 ### Algorithm-level methods
 Intuition: the loss function guides the learning process. We can modify the loss function to help the model deal with imbalance automatically during training.
 
-### Cost-sensitive learning
+#### Cost-sensitive learning
 Define a cost matrix where each entry `Cij` is the cost of class `i` getting classified as class `j`. If `i=j` the classification is correct and a 0 cost is usually used. Since learning looks for loss minimisation, the training process will put more emphasis in the misclassification of more expensive classes.
 
 This framing allows you to naturally incorporate domain knowledge like *"it is 20 times more costly to misclassify CANCER as NORMAL than the other way around"*. 
 
-### Class-balanced loss
+#### Class-balanced loss
 This is similar to cost-sensitive loss, but the weight (or cost) of misclassification is determined by the number of samples in each class.
 
 In it's vanilla form,  `Wi` (the weight for class `i`) is `1/N_samples_of_class_i`.  A more sophisticated approach can take into account overlap between existing samples an base the calculation on *effective number of samples.*
 
-### Focal loss
+#### Focal loss
 Intuition: Incentivise the model to focus on samples that it is still having trouble calculating by giving more weight to samples whose probability of classification in the correct class is lower. See the book for the focal loss equation.
 
 
@@ -291,16 +291,16 @@ Data augmentation is standard in computer vision tasks and is becoming popular i
 
 ## Simple label-preserving transformations
 - **In computer vision:** randomly modify an image preserving its label. Think rotation, cropping, flipping, inverting, erasing part of an image. 
-- **In NLP:** replace a word in a sentence with a similar word that does not change the meaning of the sentence. You can select "similar" by using a synonym dictionary, a word net or  another word that has a similar word embedding;
+- **In NLP:** replace a word in a sentence with a similar word that does not change the meaning of the sentence. You can select "similar" by using a synonym dictionary, a word net or another word that has a similar word embedding.
 
 
 ## Perturbation
 - **In computer vision:** Noisy samples can be created by either adding **random noise** or by a **search strategy** like Adversarial Augmentation. In Adversarial Augmentation, an algorithm finds the least number of changes it needs to do to a sample to change the label. You would then add that altered sample to your training data to make your model more robust.
 - **In NLP:** perturbation is less common in NLP because changing a word or adding noise will likely change the meaning of the sentence. 
 
-Perturbation can also be in the [Semi-Supervision](#Semi-Supervision) context.
+Perturbation can also be used in the [Semi-Supervision](#Semi-Supervision) context.
 
 ## Data synthesis
 - **In computer vision** a common technique is to generate new images by combining two images with different labels. This is called a *mixup*. For example if the DOG label is 0 and the CAT label is 1, you could create a mixup image that is half and half and whose label is 0.5.
-- **In NLP** string templates area a great and cheap way to generate lots of data. For example,  using the template *"Find me a \[CUISINE\] restaurant within \[NUMBER\] miles of \[LOCATION\]"* , plus  a database of CUISINES, plus some sensible parameter for NUMBER and LOCATION, you can generate thousands of samples.
+- **In NLP** string templates area a great and cheap way to generate lots of data. For example,  using the template *"Find me a \[CUISINE\] restaurant within \[NUMBER\] miles of \[LOCATION\]"* , plus  a database of CUISINES and some sensible parameter for NUMBER and LOCATION, you can generate thousands of samples.
 - Using Neural Networks to synthesise data is an exciting research area at the moment, but it is not popular in production yet.
