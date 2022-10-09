@@ -65,4 +65,5 @@ Covers different techniques for creating good training data.
 	- Class imbalance problems
 	- Lack of data problems and data augmentation
 
+**[Chapter 5: Feature engineering](05-feature-engineering.md)**
 
