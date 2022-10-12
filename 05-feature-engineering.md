@@ -185,4 +185,50 @@ This is the way position embeddings are implemented in Hugging Face's BERT.
 When positions are continuous, learning the embeddings is very hard. However, fixed (pre-computed) sine and cosine based embeddings still work.  This is also known as **Fourier Features** and [Fixed discrete embeddings](#Fixed%20discrete%20embeddings) are just a special case of the general continuous case. 
 
 # Data Leakage
-%%YOU ARE HERE%%
+Data leakage is when a model gains an unfair performance advantage during training, validation and testing by learning to exploit information that "leaks" the real label of the data. This advantage is usually an artefact of how the data was collected, processed or split. 
+
+The advantage is **not available at inference time** making your model fail in production in non-obvious and espectacular ways. The leak is usually not perceptible during validation and testing because those datasets might be part of the problem.
+
+## Common causes for data leakage
+
+### Splitting time-correlated data randomly instead of by time
+An oversimplified example: Imagine you want to predict the Google stock price based on the behaviour of all other stocks in the previous 6 days. If you split your data randomly (instead of by time), you will include stock prices of other companies on the 7th day, giving your model the unfair advantage of knowing something about the future.
+
+Generally speaking, if a label's value is correlated with time, you probably want to split your data into train, validation and test datasets by time and **not randomly.**
+
+![split data by time](05-feature-engineering.assets/split-data-by-time.png)
+
+### Scaling before splitting
+If you scale your features before splitting into train, validation and test, the scalers will encode information like the max, min, average, etc from the data that will end up in the validation and tests sets and that was meant to be fully unseen to the model.
+
+To avoid this, split the data first and build your scalers **only on your training data.** Then use the training scalers to scale the other two splits. Some people even argue that you shouldn't do exploratory data analysis on the validation and test sets to avoid leaking assumptions into the training.
+
+### Filling missing data with statistics from the validation or test split
+This is similar to the above. You don't want your imputation process to know anything about the validation and test sets.
+
+### Poor handling of data duplication before splitting
+
+Failing to remove duplicates or near-duplicates from your data before splitting your data into training, validation and test sets will allow your model to observe the same samples at training and validation/test time. 
+- Duplication is very common in industry and research datasets. Some popular datasets like CIFAR-100 had 10% of duplicates.
+- Data duplication can happen at collection time, when merging different data sources, or at processing time (e.g. when oversampling).
+- **Always check your data for duplicates before splitting** and after splitting (just to be sure).
+- If you are [oversampling](04-training-data.md#data-level-methods-resampling), do it **after** splitting.
+
+### Group leakage
+This is better explained through an example: a patient might have two lung CT scans a week apart. Both CT scans make it to your data and they probably contain the same label (they are effectively the same sample). If you split randomly, you might get one CT scan in the training data and the other one in the validation/test set. 
+
+The only way to avoid this is by understanding how your data was generated.
+
+### Leakage from the data generation process
+Imagine you are building a model to help label lung cancer. A highly specialised oncologic hospital shares their data with you as do other less specialised hospital. The CT scan machine from the specialised hospital produces its CT scan in a special format.  If the data is not processed correctly, your model might exploit the format of the CT scan to assign labels as it CT scans from the specialised hospital are more likely to contain a positive label. Of course the format shouldn't have to do anything with the diagnosis.
+
+To avoid this, think of ways to normalise your data to reduce the likelihood of your model exploiting pseudo-features about how the data was collected that should not influence the training.
+
+### Misusing the test split
+If you use the test split in any way other than to report a model’s final performance, whether to come up with ideas for new features or to tune hyper-parameters, you risk leaking information from the future into your training process.
+
+
+## Detecting data leakage
+Measure the predictive power of each feature or a set of features with respect to the target variable (label). If a feature or a set of features has an unusually high correlation with the label, investigate how this feature is generated and whether or not the correlation makes sense. 
+- A way to do measure this predictive power is by doing ablation studies on your features (or set of features): remove a feature and see if the model's performance deteriorates significantly. 
+- Keep an eye out for when new features are added to your model. If adding a feature causes a significant jump in performance, investigate if it makes sense.
