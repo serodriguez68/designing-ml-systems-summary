@@ -68,4 +68,16 @@ Covers different techniques for creating good training data.
 
 
 **[Chapter 5: Feature engineering](05-feature-engineering.md)**
-
+- Why is  feature engineering still relevant despite neural networks promising to learn the features from raw data.
+- Common feature engineering operations
+	- Handling missing values: types of missing values and how to fix them
+	- Scaling
+	- Discretization of continuous features
+	- Encoding categorical features: how to handle categories with a dynamic number of values
+	- Feature Crossing
+	- Discrete and continuous positional embeddings:  helpful for representing order information in models that don't explicitly take into account order (like transformers)
+- Data leakage: what it is, what are the common causes and how to detect it
+- Engineering good features
+	- Feature importance
+	- Feature Generalization
+ 

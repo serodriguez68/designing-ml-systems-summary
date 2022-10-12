@@ -230,5 +230,12 @@ If you use the test split in any way other than to report a model’s final perf
 
 ## Detecting data leakage
 Measure the predictive power of each feature or a set of features with respect to the target variable (label). If a feature or a set of features has an unusually high correlation with the label, investigate how this feature is generated and whether or not the correlation makes sense. 
-- A way to do measure this predictive power is by doing ablation studies on your features (or set of features): remove a feature and see if the model's performance deteriorates significantly. 
+- A way to do measure this predictive power is by doing ablation studies on your features (or set of features): remove a feature and see if the model's performance deteriorates significantly.  More on this in the [Feature Importance](#Feature%20Importance) section below.
 - Keep an eye out for when new features are added to your model. If adding a feature causes a significant jump in performance, investigate if it makes sense.
+
+## Engineering good features
+%%YOU ARE HERE%%
+
+### Feature Importance
+
+- Useful for [Detecting data leakage](#Detecting%20data%20leakage)
