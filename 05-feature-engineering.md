@@ -234,8 +234,41 @@ Measure the predictive power of each feature or a set of features with respect t
 - Keep an eye out for when new features are added to your model. If adding a feature causes a significant jump in performance, investigate if it makes sense.
 
 ## Engineering good features
-%%YOU ARE HERE%%
+Adding a feature generally leads to better model performance. However, having too many features can also be bad for your model:
+- More features = more opportunities for [Data Leakage](#Data%20Leakage)
+- More features = more opportunities for overfitting
+- More features = more memory required to serve a model = more infrastructure cost
+- More features = more computation for inference for live features = more latency
+- Useless features become technical debt. If something in the data pipeline changes (e.g. a field being dropped) you might find yourself having to update your feature calculation code even if the feature is useless.
+
+Regularization (e.g. L1 regularization) can reduce the weight of useless features to 0. However in practice it is much better just not to haven them in the first place.
+
+There are two factors to consider when evaluating whether a feature is good for a model: **feature importance** and **generalization to unseen data**.
 
 ### Feature Importance
+There are many methods for measuring feature importance. However, in general what they are trying to do is to measure how much a model's performance deteriorates if a feature of a set of features is removed.
+- If you using classical ML algorithms like boosted trees, these tend to have built-in mechanisms to measure feature importance (e.g. XGBoost has this.)
+- For model-agnostic methods you could use SHAP (SHapley Additive exPlanations). 
+	- SHAP can tell you both the overall feature importance but also the contribution of each feature **to a specific prediction**. This is very useful to understand why your model is making mistakes.
+- [Interpret ML](https://github.com/interpretml/interpret) is an open source package that implements SHAP and other 
+ Explainable ML techniques. 
+- Feature importance techniques are also useful for [detecting data leakage](#Detecting%20data%20leakage) and for interpretability.
+- To give you a sense of scale, the Facebook ads team found out that 10 features are responsible for 50% of the model's feature importance and the last 300 features contributed less than 1% to the overall importance.
 
-- Useful for [Detecting data leakage](#Detecting%20data%20leakage)
+### Feature Generalization
+Since ML is all about making prediction on unseen data, features that generalize well are desirable. However, not all features generalize equally.
+
+Feature can generalize to the point where they can be used in different models. However, there is an inherent trade-off between how generalizable a feature is VS how specific to your problem it is.
+
+Measuring feature generalization is much less scientific than feature importance. It requires intuition and subject matter expertise.
+
+Overall, there are 2 aspects to consider with regards to generalisation: **feature coverage** and **distribution of feature values**.
+
+#### Feature coverage
+Coverage is the percentage of samples that has values for a given feature. The less `nulls` in the feature, the higher the coverage.
+- A **rough** rule of thumb is that if the coverage is very low, the feature is NOT very generalizable. There are many exceptions to this rule. Perhaps the most important exception is when missing values mean something (i.e. the values are [missing not at random MNAR](#Missing%20not%20at%20random%20MNAR)). In this case, the absence of a value actually carries valuable meaning for the model.
+- If feature coverage for a given feature varies a lot between your train and test splits, this is a strong indication that your data **does not come from the same distribution** and you probably need to rethink your splits.
+
+#### Distribution of feature values
+Take a look at the distribution of the non `null` values for your features. If the distribution seen in the train split has little or no overlap with the distribution in the test split, this feature may even hurt your model.
+This is a common problem for models in which we need to split the data by time.
