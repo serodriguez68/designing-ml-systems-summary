@@ -58,5 +58,83 @@ Don't discard classical models just because the are not "neural networks".
 - Simple models and low-effort models are different things.  Using a pre-trained BERT model is low-effort (because the work is done for you), but the model is not simple. 
 	- Some times it makes sense to start with low-effort  & complex models instead of simple models. However, even in those cases having a simple model as a baseline is valuable because improving upon a complex model is very challenging. 
 
-#### Tip 6: avoid human biases in selecting models
-%%YOU ARE HERE%%
+#### Tip 6: Avoid human biases in selecting models
+**Make sure you give different architectures a similar treatment before selecting:** An engineer that is excited about a particular architecture will spend more time experimenting with it. As a result it is likely that he finds better performance in that architecture compared to the architectures they are less excited about.
+
+#### Tip 7: Evaluate good performance now VS good performance later
+- The best model now does not mean that that will be the best model two months from now. E.g. If you have little data now, a decision tree might work best now. In two months, when you have more data, a NN can maybe work better.
+- Model's performance tends to saturate as you feed the model more data. Simple models saturate faster than complex ones. You can use **learning curves** to assess if your model has learned as much as it can (i.e. has saturated) or if it still has the potential to improve in the near future. 
+	- If the model has saturated , perhaps trying a more complex model is in order.
+
+![Learning curves graphic](06-model-development-and-offline-evaluation.assets/learning-curves.png)
+
+- Some teams deploy simple models (good performance now) and complex models (good performance later) in a champion-challenger arrangement.  They keep training the complex model as more data becomes available and swap them when the complex model is performing better.
+- When doing model selection, you might want to take into account potential for improvements in the near future and difficulty to achieve those improvements in your decision making.
+
+#### Tip 8: Evaluate trade-offs
+Model selection is filled of trade-offs. Understanding what is important for your particular use-case will help you make a an informed decision. Some common tradeoffs are:
+- **False positives VS false negatives trade-off**. E.g. If your model is diagnosing a dangerous diseases, you may prefer a model that minimises false negatives.
+- **Compute intensity VS performance trade-off**: bigger and more complex models may be more accurate, but they may require more powerful machines and specialised hardware to run them.
+- **Latency VS performance trade-off**: bigger and more complex models may be more accurate, but they will be slower in producing an inference. Some use cases have tight latency requirements.
+- **Interpretability VS performance trade-off**: as model complexity grows, performance tends to improve but interpretability of the model decreases.
+
+#### Tip 9: Understand your model's assumptions
+All ML models have some baked-in assumptions. Understanding those assumptions and investigating if your data satisfies those assumptions can guide you in model selection.
+
+A sample of some common assumptions made by models:
+- **Prediction assumption:** Models assume that predicting Y from X is actually possible. Sometimes data is just random and there is no pattern to learn.
+- **Independent and Identically distributes (IID)**: lots of models (including neural networks) assume that all examples are IID.
+- **Smoothness:** all supervised ML models assumes that there is a **smooth** function that can be learned to transform inputs X into an inference Y. That means that inputs that are very similar X and X', should produce outputs that are proportionally close.
+- **Tractability:** Let X be the input and Z be the latent representation of X. Generative models assume that it is tractable to compute P(Z|X).
+- **Boundaries:** linear methods assume that decision boundaries are linear. Kernel methods assume that the decision boundaries follow the shape of the kernes used.
+- **Conditional independence:** models based on naive-Bayes classifiers assume feature values are independent of each other given the class.
+- **Normally distributed:** Many models assume that data is normally distributed.
+
+### Ensembles
+Using an ensemble is a a method that has consistently demonstrated performance boosts over single models. In an ensemble, multiple *base learners* are trained and each of them outputs a prediction. The final prediction is derived using a heuristic like majority vote.
+- 20/22 winning solutions on 2021 Kaggle competitions used ensembles. The top 20 solutions of [SQuAD 2.0](https://rajpurkar.github.io/SQuAD-explorer/) are ensembles.
+
+Ensembling methods are **less favoured in production** because they are harder to deploy and maintain. However, **they are still common in tasks where a small performance boost can lead to a huge financial gain.**
+
+When creating an ensemble, the **less correlation there is among base learners, the better the ensemble will be.** Therefore, it’s common to choose **very different types of models for an ensemble**. For example, you might create an ensemble that consists of one transformer model, one recurrent neural network, and one gradient-boosted tree.
+- It is also common to use odd number of *base learners* to avoid ties in voting.
+
+There are 3 ways to create an ensemble: **bagging, boosting** and **stacking**.  These techniques can even be combined.
+
+You can find great advice on how  to create an ensemble in MLWave's (legendary Kaggle team) [ensemble guide](https://github.com/MLWave/Kaggle-Ensemble-Guide).
+
+#### Bagging
+- Bagging has many **benefits**: improve training stability, improve accuracy, reduce variance and help to avoid overfitting.
+- **Intuition**: Sample with replacement to create different datasets. Train a classification or regression model on each dataset.
+	- Sampling with replacement ensures that each bootstrap is created independently from its peers (i.e. less correlation between base learners).
+- When to use: improve stability on unstable methods (e.g. NNs, classification and regression trees, linear regression)
+	- It can mildly degrade performance in stable methods like k-nearest neighbours.
+
+![Bagging intuition](06-model-development-and-offline-evaluation.assets/bagging-intuition.png)
+
+#### Boosting
+- **Intuition:**
+	- 1. Start by training the first weak classifier on the original dataset.
+	- 2. Samples are re-weighted based on how well the first model classifies them. Misclassified examples have higher weights. 
+	- 3. Train a second classifier with the re-weighted samples.
+	- 4. Samples a re-weighted again based on the output of classifier 2.
+	- 5. Third classifier is trained using the re-weighted samples from classifier 2.
+	- 6. Repeat for as many iterations as you need.
+	- 7. Form the final strong classifier as a weighted combination of all the existing classifiers. Classifiers with smaller training errors have higher weights.
+- **Boosted algorithms**: 
+	- Gradient Boosted Machines (GBMs)
+	- XGBoost: the algorithm of choice for many ML competitions.
+	- LightGBM: an alternative to XGBoost that allows distributed parallel training (good for large datasets).
+
+![boosting intuition](06-model-development-and-offline-evaluation.assets/boosting-intuition.png)
+
+#### Stacking
+**Intuition:** train different base learners (typically each very different in nature to the other). To produce the final prediction use a **meta-learner** whose job is to learn how to combine the predictions from the base-learners. 
+- The meta-learners can be simple heuristics like majority vote (classification) or average (regression).
+- Or they can be another (typically simpler) model like a logistic regression (classification) or linear regression model.
+- #todo : Is it common to also give the meta-learner access to the features so that it can learn what types of samples each meta-learner is good at?
+
+![stacking intuition](06-model-development-and-offline-evaluation.assets/staking-intuition.png)
+
+### Experiment tracking and versioning
+%%you are here%%
