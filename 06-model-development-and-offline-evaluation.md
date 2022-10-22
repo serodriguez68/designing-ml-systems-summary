@@ -137,4 +137,48 @@ You can find great advice on how  to create an ensemble in MLWave's (legendary K
 ![stacking intuition](06-model-development-and-offline-evaluation.assets/staking-intuition.png)
 
 ### Experiment tracking and versioning
-%%you are here%%
+Keeping track of the configuration parameters that constitute an experiment and of the artefacts that experiment produces is a key for doing **model selection** and for **understanding how changes to the experiment parameters (data, parameters, model) affect the performance of your output model.** 
+
+**Experiment tracking** and **versioning** are 2 different concepts that go hand in hand with each other and are usually spoken about as a single thing.
+- Experiment tracking: process of tracking **progress** and a **the results** of an experiment.
+- Versioning: the process of logging all the **configuration parameters** of an experiment to be able to replicate it.
+- Many tools that were originally crated for experiment tracking now include versioning (e.g. MLFlow and Weights & Biases) and vice versa (e.g. DVC). 
+
+Keep in mind that aggressive experiment tracking and versioning helps with reproducibility but does NOT ENSURE IT. 
+
+#### Experiment tracking
+- Experiment tracking allows ML engineers to effectively babysit the training process; this is very big part of the training. 
+- Some examples of things you may want to track are:
+	- **Loss curve** of train and each of the eval splits.
+	- **Model performance metrics** you care about on all non-test splits: accuracy, F1, perplexity.
+	- A **log of <sample, ground truth, prediction>**. This is useful if you need to do manual analysis for a sanity check.
+	- **Speed of your model** evaluated by the number of steps per second. If dealing with text-based models, number of tokens processes per second.
+	- **System performance metrics**: memory usage, CPU/GPU usage. Helps to identify bottlenecks and avoid wasting resources.
+	- **Values over time of any parameter and hyper-parameter** whose changes affect model performance. e.g. learning rate, gradient norms (global and per layer), weight norm.
+- In theory, it is not a bad idea to track everything you can. In practice, if you track everything you will get overwhelmed and distracted by the noise.
+
+#### Versioning
+- ML systems are part code, part data. You need to version **both.**
+- Versioning data is the hard part for these reasons:
+	- Data is much larger than code, so we can't reuse the code versioning tools. Duplicating a dataset several times to be able to roll back to a previous version is unfeasable. 
+	- There is still confusion on what exactly constitutes a `diff` when versioning data
+		- Do we track ever change OR should we track only the checksum?
+		- As of 2021, tools like DVC only register checksums of the total directory.
+	- It is not clear what merge conflicts are in versioned data.
+	- If you use user data that is subject to GDPR or similar regulations, complying with data deletion requests becomes impossible.
+
+### Debugging ML Models
+Debugging ML models is hard and frustrating for several reasons:
+- ML models fail silently. They still make predictions but the predictions are wrong. Sometimes you just don't know that your model has a bug.
+- Validating if a bug was fixed is frustratingly slow. You may need to re-train the model and then re-evaluate the sample with the new model. Sometimes you just have to wait to deploy to production to be able to tell.
+- ML models have many points of failure that may be by different teams: data, labels, features, ML algorithm, code, infra, etc.
+
+Unfortunately, there is no scientific approach to debugging ML. However there are some tried and true techniques that are generally regarded as good practices.
+- **Start simple and gradually add more components:** by doing this you are able to see if what you are doing helps or hurts performance. This also allows you to get some intuition on the behaviour to expect. 
+	- Cloning an open source state-of-the-art implementation and plugging in your own data is an anti-pattern. There is very little change that it will work and if it does't it is very hard to debug.
+- **Overfit a single batch:** After you have a simple implementation of your model, try to overfit a small batch of data and then run the evaluation on that same data to make sure it gets a very high accuracy (or the smallest loss) possible. If you can't get a very high accuracy on a small overfitted batch, there might be something wrong.
+- **Set a random seed:** ML models have many places that use randomness. Randomness makes it hard to compare and reproduce experiments as you don't know if the changes in performance are due to the randomness or due to your changes. Using a consistent random seed across experiments helps keeps things comparable.
+- See more techniques in Adrej Karpathy's post ["A Recipe for Training Neural Networks"](http://karpathy.github.io/2019/04/25/recipe/)
+
+### Distributed Training
+%%You are here%%
