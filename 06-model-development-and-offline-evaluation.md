@@ -245,5 +245,50 @@ There are multiple variants of this but the basic idea is to split up the model 
 
 
 
+
 ### Auto ML
+Auto-ML is the broad idea of using more compute power to solve some chore tasks that used to be done by ML engineers and grad students. 
+
+#### Soft Auto ML: Hyperparameter tuning
+- Hyperparameter tuning means finding the optimal set of hyperparameters for a given model **within a search space.**
+- As of 2022, this is the most popular form of Auto-ML.
+- Tuning well hyperparameters on a given model and given dataset can have a drastical effect on performance.
+	- It has even been shown that weaker models with well-tuned parameters can outperform stronger models.
+- Despite its importance, many companies still ignore rigorous systematic approaches to hyperparameter tuning and use manual, intuition-based methods.
+- Many popular ML libraries either come with built-in utilities or have third-party utilities for auto hyperparameter tuning. For example sklearn has auto-sklearn, TensorFlow has Keras Tune and  Ray Tune.
+- Popular methods for auto hyperparameter tuning are: random search, grid search and bayesian optimisation.
+- Hyperparameters that have a greater impact in the model performance need to be tuned more carefully.
+- **NEVER use your test split to tune hyperparameters.** Choose the parameters based on you validation set and only use the test set to assess the final performance.
+- An in depth guide to hyperparameter tuning can be found in [chapter 1 of the book *Auto ML: Methods, Systems, Challenges*](https://www.automl.org/wp-content/uploads/2019/05/AutoML_Book_Chapter1.pdf)
+
+#### Hard auto ML: Architecture Search and Learned Optimizers
+
+- *Architecture search* and *learned optimizers* are two independent AutoML tasks (although they can theoretically be used together). As of 2022, they are still in "research" phase and are not widely used yet by companies in production.
+- The up-front computation cost for any of the two task is so hight that only a handful of companies in the world can afford to pursue research in these areas.
+- As a layman ML Engineer it is important for you to be aware of the progress in AutoML because:
+	- The architectures resulting from *architecture search* research can be general enough to be used off-the-shelf on many real-world task and you could apply them to your problems.  
+		- *Architecture search* research has produced architectures that are higher-performing, have training and/or faster  inference, etc. For example, Google's EfficientNets from their AutoML team surpass state-of-the-art accuracy with 10x efficiency.
+	- The optimizers that come out from the *learned optimizers* research can be general enough to apply to many different tasks with no further pre-training (i.e. they can be a form of transfer learning).  This can make your training faster and more stable.
+	- Output from these research areas might make it possible to solve many real-world problems that where previously impossible with exiting architectures and optimizers.
+
+##### Architecture Search (aka Neural Architecture Search NAS)
+
+**Intuition:** use an algorithm to systematically vary architectural parameters of your neural network (e.g. size of the layers, yes / no adding a skip layer) to find the optimal architecture for your problem.
+
+A NAS problem has three components:
+- **A search space:** the architectural building blocks your algorithm can vary, the constraints for each and rules for combining them. The set of building blocks varies depending on the base architecture (e.g. CNNs, transformers, FFNNs, RNNs, etc). 
+- **A performance estimation strategy:** when your search space is large, training each architecture candidate until convergence to evaluate the architecture's performance can be prohibitively costly. You need a strategy to cheaply estimate performance to allow the NAS algorithm to make decisions.
+- **A search strategy** to explore the search space. Common approaches are *reinforcement learning* (reward algorithm for choices that improves performance) and *evolutionary algorithms* (add mutations to an architecture > choose the  best performing ones > add mutations to them).
+
+##### Learned optimizers
+Gradient descent based learning tasks use an optimizer under the hood that specifies how to update the model's weights given gradient updates. Popular optimizers are Adam, Momentum, SGD. 
+
+These optimisers take the form of a function plus some optimizer hyperparameters (like learning rate). The function itself was defined by a human; what if we could replace that function with a NN and learn the hyper-parameters?
+
+This is exactly what the *learned optimisers* research area is trying to do. They are trying to meta-train NNs using several learning tasks as "training data" to come up with generalizable neural-based optimiser functions that can be used "off-the-shelf" for multiple learning tasks and multiple NN architectures.
+- The computational cost of doing this is massive. A single sample for the meta-learning task could be something like: `<NIST dataset, CNN with 5 convolutional layers, batch sise 32, 10K steps>`
+- Some optimizers have properties of being able to further train themselves.
+- [This video](https://www.youtube.com/watch?v=3baFTP0uYOc) on Google's *"Training more effective learned optimizers, and using them to train themselves"* paper explains the intuition of this very well. (Watch until min 15 for just the intuition part.)
+
+## Model Evaluation
 %%You are here%%
