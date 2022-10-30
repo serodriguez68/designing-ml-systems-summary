@@ -23,21 +23,30 @@ Narrow the search space of model selection by focusing only on the models that a
 - If you want to build a fraud detection system, you should know this is a classic anomaly detection problem and that common models used for this category of problems are KNNs, isolation forest, clustering and neural networks.
 - If you are tasked with an NLP text classification problem your options typically are naive-Bayes, logistic regressions, recurrent neural networks and transformer-based models such as BERT or GPT.
 
-#### Tip 2: Consider model properties beyond training metrics
+#### Tip 2: Be aware of your team's "maturity phase" for the problem type you are facing
+
+There are 4 phases of ML adoption for a given problem. The solution for one phase can be used as the baseline to evaluate the solution for the next phase:
+
+- **Phase 1: Pre-ML** : This is your first time solving this type of problem. Your first stab at the problem can be a simple heuristic like recommending "most popular" or ordering by chronological order. You may even find that a non-ML solution is all you need.
+- **Phase 2: Simplest ML models:** This will be your first ML model for this problem.  See [Tip 6: Start with the simplest model](#Tip%206:%20Start%20with%20the%20simplest%20model).
+- **Phase 3: Optimizing simple models:** Make your simple model better by optimising objective functions, hyper-paramenters search, feature engineering adding more data, creating ensembles, etc.
+- **Phase 4: Complex models:** Move to complex models once you have reached the limits of your simple models. In this phase you also want to figure out how your model decays (e.g. how often retraining is needed) so that you build retraining pipelines.
+
+#### Tip 3: Consider model properties beyond training metrics
 Direct training-related performance metrics like accuracy, F1, log loss are typically used for model selection. However, these should not be only metrics to consider.  
 
 You should also care about other properties like amount of data needed, computational needs of the model, time to train, inference latency and model interpretability.  
 
 The set of metrics you select to make your decision varies depending on your problem. For example, some in some use cases latency is critical even if it means sacrificing a bit of accuracy.
 
-#### Tip 3: Avoid the state-of-the-art trap
+#### Tip 4: Avoid the state-of-the-art trap
 Models with "state-of-the-art"  performance  usually come directly from research. However researchers often only evaluate their models in academic settings using existing pre-defined datasets.
 
-The fact that a model has state-of-the-art performance in research does not mean that the model will be fast enough, or cheap enough *you* to implement. Similarly it doesn't mean it will has the same performance on *your data*.
+The fact that a model has state-of-the-art performance in research does not mean that the model will be fast enough, or cheap enough for *you* to implement. Similarly it doesn't mean it will have the same performance on *your data*.
 
 If there’s a solution that can solve your problem that is much cheaper and simpler than state-of-the-art models, use the simpler solution.
 
-#### Tip 4: Avoid the "classic ML is dead" trap
+#### Tip 5: Avoid the "classic ML is dead" trap
 Neural networks receive a lot of press these days. However, that doesn't mean that classical ML models are going away. Classical models are still vastly used in production, especially when latency or explainability are important.  
 
 Additionally, it is not rare to see classical and neural models deployed in tandem.  For example:
@@ -47,7 +56,8 @@ Additionally, it is not rare to see classical and neural models deployed in tand
 
 Don't discard classical models just because the are not "neural networks".
 
-#### Tip 5: Start with the simples model
+#### Tip 6: Start with the simplest model
+- Simple models allow you to validate your framing and your data early.
 - Simpler models are easier to deploy. Deploying your model early allows you to validate things like: 
 	- End-to-end behaviour of your feature
 	- Consistency between your prediction and training pipelines
@@ -58,10 +68,10 @@ Don't discard classical models just because the are not "neural networks".
 - Simple models and low-effort models are different things.  Using a pre-trained BERT model is low-effort (because the work is done for you), but the model is not simple. 
 	- Some times it makes sense to start with low-effort  & complex models instead of simple models. However, even in those cases having a simple model as a baseline is valuable because improving upon a complex model is very challenging. 
 
-#### Tip 6: Avoid human biases in selecting models
+#### Tip 7: Avoid human biases in selecting models
 **Make sure you give different architectures a similar treatment before selecting:** An engineer that is excited about a particular architecture will spend more time experimenting with it. As a result it is likely that he finds better performance in that architecture compared to the architectures they are less excited about.
 
-#### Tip 7: Evaluate good performance now VS good performance later
+#### Tip 8: Evaluate good performance now VS good performance later
 - The best model now does not mean that that will be the best model two months from now. E.g. If you have little data now, a decision tree might work best now. In two months, when you have more data, a NN can maybe work better.
 - Model's performance tends to saturate as you feed the model more data. Simple models saturate faster than complex ones. You can use **learning curves** to assess if your model has learned as much as it can (i.e. has saturated) or if it still has the potential to improve in the near future. 
 	- If the model has saturated , perhaps trying a more complex model is in order.
@@ -71,14 +81,14 @@ Don't discard classical models just because the are not "neural networks".
 - Some teams deploy simple models (good performance now) and complex models (good performance later) in a champion-challenger arrangement.  They keep training the complex model as more data becomes available and swap them when the complex model is performing better.
 - When doing model selection, you might want to take into account potential for improvements in the near future and difficulty to achieve those improvements in your decision making.
 
-#### Tip 8: Evaluate trade-offs
+#### Tip 9: Evaluate trade-offs
 Model selection is filled of trade-offs. Understanding what is important for your particular use-case will help you make a an informed decision. Some common tradeoffs are:
 - **False positives VS false negatives trade-off**. E.g. If your model is diagnosing a dangerous diseases, you may prefer a model that minimises false negatives.
 - **Compute intensity VS performance trade-off**: bigger and more complex models may be more accurate, but they may require more powerful machines and specialised hardware to run them.
 - **Latency VS performance trade-off**: bigger and more complex models may be more accurate, but they will be slower in producing an inference. Some use cases have tight latency requirements.
 - **Interpretability VS performance trade-off**: as model complexity grows, performance tends to improve but interpretability of the model decreases.
 
-#### Tip 9: Understand your model's assumptions
+#### Tip 10: Understand your model's assumptions
 All ML models have some baked-in assumptions. Understanding those assumptions and investigating if your data satisfies those assumptions can guide you in model selection.
 
 A sample of some common assumptions made by models:
