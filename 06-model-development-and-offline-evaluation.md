@@ -181,4 +181,59 @@ Unfortunately, there is no scientific approach to debugging ML. However there ar
 - See more techniques in Adrej Karpathy's post ["A Recipe for Training Neural Networks"](http://karpathy.github.io/2019/04/25/recipe/)
 
 ### Distributed Training
+It is common to train models with data that does not fit into memory. When this happens, your algorithms for preprocessing (e.g. normalizing), shuffling  batching and training will need to happen in different machines and in parallel.
+
+As an ML engineer, getting experience with distributed training and ML scaling is hard because it requires access to large amounts of resources.
+
+Next we will cover some modes of distributed training.
+
+#### Data parallelism
+Intuition:  split your data on multiple machines, train your model on all of them, and accumulate gradients.
+
+This is the most common parallelization method but it has a couple of issues.
+
+##### Issue 1: sync vs async gradient descent
+
+When your data is very large (e.g 100B samples), you won't be able to process your entire training set and accumulate the gradients even if you split the entire training set into multiple machines (e.g. 10 machines, means 10B samples per machine, this is is still unfeasible).
+
+Similar to what happens in the non-parallel case,  you will need to use **mini-batches**. Different to the non-parallel case, in parallel training you will split the **mini-batch** further into the number of available machines and have each machine process a **mini-mini-batch**.  
+
+The issue happens when you need to decide how to **update the weights and biases** after a machine is done processing a **mini-mini-batch**.
+
+- **Synchronous stochastic gradient descent** (sync-SGD):  This approach waits for all machines to finish processing their respective mini-mini-batches before accumulating gradients. A main node then accumulates the gradients and updates the weights.  All assisting nodes download the new model weights from the main once it is done and start processing the next mini-batch. 
+	- Pros: converges faster
+	- Cons: One slow assisting machine will cause all the system to slow down. The more machines, the more likelihood that one will be slow. There are algorithms that address this problem.
+- **Asynchronous stochastic gradient descent (async-SGD)**:  machines send their gradients to the main node as soon as they finish processing their mini-mini-batch. The main node immediately updates the weights without waiting for other assisting nodes. assisting nodes download the updated version of the model immediately and they get to work on the next mini-mini-batch.
+	- Pros: no system slowdown due to slow nodes.
+	- Cons: in theory needs more steps to converge due to gradient staleness.
+		- In practice,  if gradient updates are sparse, there is little difference in the convergence speed between sync and async SGD.
+
+![sync vs async sgd](06-model-development-and-offline-evaluation.assets/sync-vs-async-sdg.png)
+
+##### Issue 2: Large number of assisting nodes = large batch sizes
+If you have access to say 100 assisting GPU nodes and each can process a mini-mini-batch of 10,000 samples, then the mini-batch size would be 1M. Larger mini-batches typically cause models to train faster because GPUs are not very sensitive to number of samples (i.e. you can 2X the number of samples and the computation time won't 2X). 
+
+The usual rule of thumb *in theory* is that if you 2X the mini-batch size you should also ~2X the learning rate. However, *in practice*: 
+- Increasing the learning rate too much may cause unstable convergence
+- Increasing the batch size past certain point brings diminishing returns
+- Increasing the batch size while keeping your learning rate a number of epochs constant can result in lower accuracy
+- The selection of the batch size and learning rate hyper parameters is an art more than a science. [Weights and biases has a great video that goes over the intuition of learning-rate vs batch size](https://www.youtube.com/watch?v=ZBVwnoVIvZk)
+
+Don't fall into the trap of losing sight of the mini-batch size or using gigantic batch sizes just because you have access to a large amount of GPUs.
+
+#### Model parallelism
+In model parallelism, different components of your models are trained in different machines. Model parallelism and data parallelism are not mutually exclusive. Both can be done simultaneously, but the setup of such arrangement requires a significant engineering effort.
+
+The figure below depicts a hybrid data and model parallelism arrangement. In this arrangement machines 2 and 4 will wait until the first stage is done (machines 1 and 3).  Idle machine time is bad; **pipeline parallelism** can be used to reduce these idling times.
+
+![model parallelism](06-model-development-and-offline-evaluation.assets/model-parallelism.png)
+
+##### Pipeline parallelism
+There are multiple variants of this but the basic idea is to split up the model into serial components that run on different machines and then stagger feeding of mini-mini-batches. The figure below depicts this arrangement. Pipeline parallelism does not eliminated waiting, but does reduce it.
+
+![pipeline parallelism](06-model-development-and-offline-evaluation.assets/pipeline-parallelism.png)
+
+
+
+### Auto ML
 %%You are here%%
