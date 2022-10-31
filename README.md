@@ -80,4 +80,16 @@ Covers different techniques for creating good training data.
 - Engineering good features
 	- Feature importance
 	- Feature Generalization
- 
+
+
+**[Chapter 6: Model Development and Offline Evaluation](06-model-development-and-offline-evaluation.md)**
+ - Model selection, development and training
+	- Criteria to select ML models
+	- Ensembles as part of model selection
+	- Experiment tracking and versioning during model development.
+	- Debugging ML models
+	- Modes of Distributed training: data parallelism, model parallelism and pipeline parallelism.
+	- AutoML: automatic hyperparameter tuning, auto architecture search and learned optimizers.
+- Offline evaluation: How to evaluate your model alternatives to pick the best one
+	- Baselines: you need to compare your model against something.
+	- Offline evaluation methods beyond overall ML metrics:  Evaluating your models for robustness, fairness, and sanity before picking one and sending it to production.

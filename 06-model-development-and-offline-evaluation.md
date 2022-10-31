@@ -5,14 +5,15 @@ With an **initial** set of training features, model development can finally begi
 
 This chapter will cover:
 - Model selection, development and training
-	- Aspects to consider when making a model selection decision
+	- Criteria to select ML models
 	- Ensembles as part of model selection
 	- Experiment tracking and versioning during model development.
-	- Distributed training
-	- AutoML
+	- Debugging ML models
+	- Modes of Distributed training: data parallelism, model parallelism and pipeline parallelism.
+	- AutoML: automatic hyperparameter tuning, auto architecture search and learned optimizers.
 - Offline evaluation: How to evaluate your model alternatives to pick the best one
-	- Baselines
-	- Evaluation methods: Sanity checks to try before sending your model to production
+	- Baselines: you need to compare your model against something.
+	- Offline evaluation methods beyond overall ML metrics:  Evaluating your models for robustness, fairness, and sanity before picking one and sending it to production.
 
 ## Model Selection, Development and Training
 ### Criteria to select ML models
