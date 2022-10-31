@@ -12,7 +12,7 @@ This chapter will cover:
 	- AutoML
 - Offline evaluation: How to evaluate your model alternatives to pick the best one
 	- Baselines
-	- Sanity checks to try before sending your model to production
+	- Evaluation methods: Sanity checks to try before sending your model to production
 
 ## Model Selection, Development and Training
 ### Criteria to select ML models
@@ -290,5 +290,93 @@ This is exactly what the *learned optimisers* research area is trying to do. The
 - Some optimizers have properties of being able to further train themselves.
 - [This video](https://www.youtube.com/watch?v=3baFTP0uYOc) on Google's *"Training more effective learned optimizers, and using them to train themselves"* paper explains the intuition of this very well. (Watch until min 15 for just the intuition part.)
 
-## Model Evaluation
-%%You are here%%
+## Model Offline Evaluation
+This section covers how to evaluate your models to pick the best one to deploy.  The section covers two topics:
+- Baselines: you need something to compare against.
+- Evaluation methods beyond overall ML metrics.
+
+Note that:
+- In addition to ML-based metrics, you may want to partner with the business team to develop metrics that are more relevant to the company's business.
+- Ideally you want your evaluation methods to be the same in development and in production. 
+	- If you are lucky, you may be able to use [natural labels](04-training-data.md#natural-labels) to measure performance in production.
+	- Matching evaluations in dev and prod  is sometimes impossible because you may not have access to labels in prod. For these cases, you will need to use extensive monitoring in production (see [Chapter 8](08-data-distribution-shifts-and-monitoring.md))
+	
+
+### Baselines
+Evaluation metrics by themselves mean little. It is essential to know the baseline you are comparing against.  The baseline you use will change based on your use case. However, this section covers some that are commonly used and are generalizable across use cases.
+
+#### Random baseline
+Generate a baseline model that produces prediction following a specific random distribution.  It can be the uniform distribution or follow the task's label distribution.
+
+#### Simple heuristic
+Generate a baseline model that makes predictions using a simple heuristic and measure it's performance. Examples of heuristics are: predict most popular, recommend by number of votes.
+
+#### Zero rule baseline
+Baseline model that always predicts the most common class. If this baseline produces 70% accuracy, then your model should outperform significantly better to justify the added complexity.
+
+#### Human baseline
+Use human performance / accuracy as the baseline. It is often useful to know how much better / worse your model is at the task compared to a human.
+
+#### Existing solution baseline
+If you already have an algorithm full of if/else statements, a previous model or a vendor provided model, use that as a baseline.  You don't necessarily have to do better than the baseline to select your model. Sometimes if your model has a little less accuracy but it is much cheaper, then it is worth pursuing.
+
+### Evaluation methods beyond overall ML metrics
+People tend to fixate on overall performance metrics like F1 and accuracy. However there is much more to model evaluation and selection than overall ML metrics. For a production model you need to make sure that your model is **robust, fair, calibrated and that it makes sense overall.**
+
+#### Evaluating robustness with perturbation tests
+- Ideally you should train your model with data that has the same distribution and level of noise than the data in production. However this is not always possible.
+- Because of noisy production data and changes in distribution, the best model measured on noiseless data is not necessarily the best model against noisy production data.
+- To get a sense of how well will your model do against noisy data, add some noise (perturbations) to the samples in your test set and see if that affects the model's performance dramatically.
+- The more sensitive your model is to noise, the harder it will be to maintain and the more vulnerable to adversarial attacks.
+- If your model is too sensitive to noise, check the  [semi-supervision]([semi-supervision](04-training-data.md#Semi-Supervision)) and [data augmentation](04-training-data.md#Perturbation) notes on how to reduce this during training.
+
+#### Evaluating fairness with invariance tests
+- Certain changes to the inputs should NOT lead to changes in the prediction. For example changes in race or gender of a sample shouldn't affect anyone's credit worthiness.
+- During **invariance tests**, ML engineers change sensitive information form the test samples and see if the predictions change.
+- To help eliminate this from the root, you should exclude sensitive information features from your model training altogether. 
+
+#### Sanity checks with discretional expectation tests
+- Certain changes in the data should change the prediction in a predictable way. For example, increase in the are of the home should increase the predicted value of the property.
+- **Discretional expectation tests** vary features that should cause the output to change in an expected way and assess that the model does behave like expected. 
+- If your discretional variation causes the output to behave in the opposite direction, your model might be learning the wrong things.
+
+#### Evaluating calibration
+- If a model labels 100 images with "60% sure that this is a cat", then 60 out of the 10 images should indeed be cats.  If that happens, we call the model "well calibrated".  On the contrary, if 90/100 images end up being cats, then the model is uncalibrated.
+- Calibration is key to be able to confidently treat the 0 to 1 model outputs as probabilities. If a model is calibrated, output probabilities match real-world probabilities allowing as to do further probability based calculations like expected values with confidence.
+- Calibration also allows better model modularity. Model modularity is using the output of a model as a feature for a downstream model. If an upstream model is changed that model is uncalibrated, you might need to retrain all downstream models.
+- Model calibration is often overlooked by ML engineers.
+- This [youtube video]( https://www.youtube.com/watch?v=hWb-MIXKe-s) gives a simple intuitive explanation of what calibration is.
+- Regression models also need calibration tests.
+- Model calibration is often done as a post-processing layer after the model. Some resources to do so are:
+	- Platt Scaling in `sklearn.calibration.CalibratedClassifierCV
+	- Neural network calibration with [temperature scaling](https://github.com/gpleiss/temperature_scaling)
+	- [Blog post on calibration by Google](https://www.unofficialgoogledatascience.com/2021/04/why-model-calibration-matters-and-how.html)
+
+#### Sanity checks with confidence measurement
+- For some use cases, if your model is unsure about something you may want to abstain from showing your recommendation to the user because they may lose confidence.
+- Confidence measurement tries to identify:
+	- How do you measure certainty for your use case?
+	- What is threshold above which you will be confident of a prediction?
+	- What do you do with prediction that are below the threshold? (e.g. discard them, loop in humans, ask for more info to the user)
+- Confidence measurements are sample by sample. This is not an average measure.
+
+#### Evaluating performance and fairness with slice-based evaluation tests
+
+Slicing means separating your data into *critical slices (subsets)* and evaluating how your model performs for each slice.
+
+Focusing on global aggregation metrics and ignoring slice-based performance has  problems:
+- For some problems, your model should behave equally for all slices. If it behaves differently then your model may be **biased and unfair**.
+	- For example, you may discover that model A has 96% overall accuracy, but has worse accuracy when evaluating the `women` slice separately to the `men` one. Model B performs a little worse overall at 95% but has the same accuracy for the `men` and `women` slices. Model B is probably preferable. 
+	- Discovering that your model performs different in different slices that should perform equally means that you've discovered an opportunity to improve overall performance.
+- For some problems you expect your model to perform better for certain slices. If the slices perform the same, then that is a problem.
+	- For example, in churn prediction, your `paying customers` slice is more important than your `freemium customers` slice. In this instance you would expect the `paying customers` slice performance to be better.
+
+Defining what your *critical slices* are is more of an art than a science. Here are some common approaches:
+	- **Heuristic-based:** Slice your data based on domain knowledge. (e.g. by gender, mobile vs web traffic, by race)
+	- **Error analysis:** manually go through misclassified examples and find patterns among them. You may discover a slice if a certain group gets constantly misclassified.
+	- **Slice finder:** there has been some research to systematise finding slices, usually by automatic generation of candidate slices and then pruning of bad candidates. Examples:
+		- [Slice Finder: Automated Data Slicing for Model Validation](https://ieeexplore.ieee.org/abstract/document/8731353)
+		- [Subgroup Discovery Algorithms: A Survey and Empirical Evaluation
+](https://jcst.ict.ac.cn/EN/10.1007/s11390-016-1647-1)
+
+When you find your *critical slices*, you will need sufficient, correctly labeled data for each slice to be able to do the slice-bases evaluation tests.

@@ -298,7 +298,7 @@ Data augmentation is standard in computer vision tasks and is becoming popular i
 - **In computer vision:** Noisy samples can be created by either adding **random noise** or by a **search strategy** like Adversarial Augmentation. In Adversarial Augmentation, an algorithm finds the least number of changes it needs to do to a sample to change the label. You would then add that altered sample to your training data to make your model more robust.
 - **In NLP:** perturbation is less common in NLP because changing a word or adding noise will likely change the meaning of the sentence. 
 
-Perturbation can also be used in the [Semi-Supervision](#Semi-Supervision) context.
+Perturbation can also be used in the [Semi-Supervision](#Semi-Supervision) context and the [offline evaluation contexts](06-model-development-and-offline-evaluation.md#Evaluating%20robustness%20with%20perturbation%20tests).
 
 ## Data synthesis
 - **In computer vision** a common technique is to generate new images by combining two images with different labels. This is called a *mixup*. For example if the DOG label is 0 and the CAT label is 1, you could create a mixup image that is half and half and whose label is 0.5.
