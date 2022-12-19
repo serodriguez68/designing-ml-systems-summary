@@ -93,3 +93,23 @@ Covers different techniques for creating good training data.
 - Offline evaluation: How to evaluate your model alternatives to pick the best one
 	- Baselines: you need to compare your model against something.
 	- Offline evaluation methods beyond overall ML metrics:  Evaluating your models for robustness, fairness, and sanity before picking one and sending it to production.
+
+
+[Chapter 7: Model Deployment and Prediction Service](07-model-deployment-and-prediction-service.md)
+- The four modes for serving predictions:
+	- 1) Batch prediction that only uses batch features
+	- 2) Online prediction that only uses batch features
+	- 3) Online prediction that uses both batch features and streaming features (aka streaming prediction)
+		- Unifying the Batch Training Pipeline with the Streaming  Serving Pipeline 
+	- 4) Hybrid between modes 1 and 2 (batch and online with batch features)
+- Faster Inference through Model Compression
+	- Low-rank factorization
+	- Knowledge Distillation: train a simpler student model to behave like a complex teacher model.
+	- Pruning: Identify which nodes in a neural network contribute little to the prediction and either eliminate them or set the weights to zero.
+	- Quantization: use less bits to store the weights of a NN. (e.g 16 bits instead of 32 bits)
+- ML inference on the Cloud vs on the Edge
+	- Pros, Cons and *"When to Use"* for Cloud and Edge
+	- Compiling and Optimizing Models for Edge Devices
+		- Manual Model Optimization
+		- Using ML for Model Optimization
+	- ML in browsers
