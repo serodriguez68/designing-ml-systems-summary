@@ -300,7 +300,7 @@ Note that:
 - In addition to ML-based metrics, you may want to partner with the business team to develop metrics that are more relevant to the company's business.
 - Ideally you want your evaluation methods to be the same in development and in production. 
 	- If you are lucky, you may be able to use [natural labels](04-training-data.md#natural-labels) to measure performance in production.
-	- Matching evaluations in dev and prod  is sometimes impossible because you may not have access to labels in prod. For these cases, you will need to use extensive monitoring in production (see [Chapter 8](08-data-distribution-shifts-and-monitoring.md))
+	- Matching evaluations in dev and prod  is sometimes impossible because you may not have access to labels in prod. For these cases, you will need to use extensive monitoring in production (see [Chapter 8](08-data-distribution-shifts-and%20monitoring-in-production.md))
 	
 
 ### Baselines

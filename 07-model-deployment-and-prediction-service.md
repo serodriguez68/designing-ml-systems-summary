@@ -1,13 +1,13 @@
-# 7 Model Deployment and Prediction Service
+# 7 - Model Deployment and Prediction Service
 
 
 With you ML model now selected, trained and evaluated, it is time to deploy to production. As with every other step in this book, this is an iterative process and you may need to go back to previous steps to rethink parts.  For this particular step this iterative nature is true because how a model serves and computes the predictions influences how it should be designed, the infrastructure it requires, and the behaviors that users encounter.
 
 This chapter talks about:
 - Some common myths around ML deployment to production.
-- Explains the 3 main **modes of prediction**: 1. batch prediction, 2. online prediction that only uses batch features, 3. online prediction that uses both batch features and streaming features (aka streaming prediction).
+- Explains the 4 main **modes of prediction serving**: 1. batch prediction, 2. online prediction that only uses batch features, 3. online prediction that uses both batch features and streaming features (aka streaming prediction) and 4. A hybrid between 1 and 2.
 - Gives you some intuition of when to use batch prediction VS online prediction.
-- Discusses the challenges of unifying the batch data pipeline and the streaming pipeline.
+- Discusses the challenges of unifying the batch training data pipeline and the streaming prediction pipeline.
 - **Model compression** techniques for increasing inference speed in ML models.
 - Considerations about deploying your model on **the cloud VS the edge.**
 
@@ -28,7 +28,7 @@ Some introductory notes before we get started:
 This is false. Medium to large companies have many, many ML models running concurrently in production. It is common to find at least one model per application feature. e.g. predict ride demand, predict driver availability, estimate time of arrival, dynamic pricing, etc.
 
 ### Myth 2: If We Don't Do Anything, Model Performance Remains the Same
-Like software systems, ML systems suffer from "software rot". Additionally, ML systems also suffer from [data distribution shifts](08-data-distribution-shifts-and-monitoring.md) over time and that shift will hurt performance. This is why ML models tend to perform best right after training.
+Like software systems, ML systems suffer from "software rot". Additionally, ML systems also suffer from [data distribution shifts](08-data-distribution-shifts-and%20monitoring-in-production.md) over time and that shift will hurt performance. This is why ML models tend to perform best right after training.
 
 ### Myth 3: You Won't Need to Update Your Models as Much
 Related to the performance decay mentioned above, we want to update models as often as possible. Cadences of "once a month" or "once a quarter" are typical. However, there are companies that con do updates every X minutes if needed.
