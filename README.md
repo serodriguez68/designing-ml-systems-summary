@@ -113,3 +113,31 @@ Covers different techniques for creating good training data.
 		- Manual Model Optimization
 		- Using ML for Model Optimization
 	- ML in browsers
+
+[Chapter 8: Data distribution shifts and monitoring in production](08-data-distribution-shifts-and%20monitoring-in-production.md)
+- Causes of ML System Failures
+	- Software system failures
+	- ML-specific failures
+		- Extreme data sample edge cases
+		- Degenerate feedback loops
+	- Data Distribution Shifts: A particularly hairy ML-specific failure
+		- Types of distribution shifts
+		- Detecting Data Distribution Shifts
+			- Detection using accuracy-related metrics
+			- Detection using statistical methods
+			- Time window considerations for detecting shifts
+		- Addressing Data Distribution Shifts
+			- Minimizing model sensitivity to shifts
+			- Correcting shifts after the model has been deployed
+- Monitoring and Observability
+	- Software related metrics
+	- ML-Specific metrics
+		- Monitoring accuracy-related metrics
+		- Monitoring predictions
+		- Monitoring features
+		- Monitoring raw inputs
+	- Monitoring toolbox
+		- Logs and distributed tracing
+		- Dashboards
+		- Alerts
+		

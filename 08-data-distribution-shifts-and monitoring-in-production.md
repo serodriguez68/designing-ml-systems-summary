@@ -39,7 +39,7 @@ Examples are:
 
 This section will cover two of them and the next section will focus exclusively on data distribution shifts.
 
-### Edge cases
+### Extreme data sample edge cases
 Edge cases are data samples so extreme that cause the model to make catastrophic mistakes.
 
 In some applications, edge cases can prevent your model from being deployed altogether if the consequences of a prediction gone wrong are catastrophic. A typical example is self driving cars.
@@ -319,7 +319,7 @@ For the reasons above, monitoring raw inputs usually falls under the data platfo
 
 From the implementation perspective, the pillars of monitoring are **metrics, logs and traces**. However, from the **"user monitoring the systems"** perspective the real pillars of monitoring are: **logs, dashboards and alerts.**
 
-### Logs
+### Logs and distributed tracing
 - If you have a distributed system (most likely you have), make sure your logs have *distributed tracing*.
 - Record all event metadata with the logs: when it happens, what service it happens in, the function that was called, the user associated , etc. Log tagging is your friend for this.
 - If you want to analyse your logs, analising billions of logs is futile. Companies use ML to do large scale analysis of logs.
