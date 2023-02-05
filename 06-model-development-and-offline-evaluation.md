@@ -173,7 +173,7 @@ Keep in mind that aggressive experiment tracking and versioning helps with repro
 - Versioning data is the hard part for these reasons:
 	- Data is much larger than code, so we can't reuse the code versioning tools. Duplicating a dataset several times to be able to roll back to a previous version is unfeasable. 
 	- There is still confusion on what exactly constitutes a `diff` when versioning data
-		- Do we track ever change OR should we track only the checksum?
+		- Do we track every change OR should we track only the checksum?
 		- As of 2021, tools like DVC only register checksums of the total directory.
 	- It is not clear what merge conflicts are in versioned data.
 	- If you use user data that is subject to GDPR or similar regulations, complying with data deletion requests becomes impossible.

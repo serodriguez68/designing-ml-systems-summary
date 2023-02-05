@@ -89,6 +89,9 @@ A naïve example to illustrate the point:
 
 Note thats this naïve example will probably not be good enough to combat a degenerate feedback loop. Fancier multi-model systems can be used but the underlying idea is the same. 
 
+##### Method 3: Use contextual bandits
+Read more about bandits and contextual bandits in [Chapter 9](09-continual-learning-and-test-in-production.md#Side%20note%20Using%20contextual%20bandits%20to%20improve%20recommendation%20algorithms)
+
 # Data Distribution Shifts
 
 This is a type of [ML-specific failure](08-data-distribution-shifts-and%20monitoring-in-production.md#ML-specific%20failures) that deserves its own section because of how hard it is to detect and act on.
@@ -218,7 +221,7 @@ Imagine, you are tasked with building a regression model for house prices in the
 Once a model is deployed, there are two main approaches to deal with data distribution shifts.
 
 #### Retrain models periodically
-This is, by far,  the most common strategy seen in industry. 
+This is, by far,  the most common strategy seen in industry.  In fact, it is so important that ["Chapter 9: Continual learning and testing in production"](09-continual-learning-and-test-in-production.md) is solely dedicated to this.
 
 In this approach models get re-trained periodically (e.g. once a month, once a week, once a day).  There are 3 things to consider:
 1. The decision on the optimal **retraining frequency** is important. However, many companies still determine it using gut feeling instead of experimental data. More about retraining frequency in  ["chapter 9 > how often to update your models".](09-continual-learning-and-test-in-production.md#How%20often%20to%20Update%20your%20models)

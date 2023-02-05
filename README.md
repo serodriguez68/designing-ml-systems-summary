@@ -95,7 +95,7 @@ Covers different techniques for creating good training data.
 	- Offline evaluation methods beyond overall ML metrics:  Evaluating your models for robustness, fairness, and sanity before picking one and sending it to production.
 
 
-[Chapter 7: Model Deployment and Prediction Service](07-model-deployment-and-prediction-service.md)
+[**Chapter 7: Model Deployment and Prediction Service**](07-model-deployment-and-prediction-service.md)
 - The four modes for serving predictions:
 	- 1) Batch prediction that only uses batch features
 	- 2) Online prediction that only uses batch features
@@ -114,7 +114,7 @@ Covers different techniques for creating good training data.
 		- Using ML for Model Optimization
 	- ML in browsers
 
-[Chapter 8: Data distribution shifts and monitoring in production](08-data-distribution-shifts-and%20monitoring-in-production.md)
+[**Chapter 8: Data distribution shifts and monitoring in production**](08-data-distribution-shifts-and%20monitoring-in-production.md)
 - Causes of ML System Failures
 	- Software system failures
 	- ML-specific failures
@@ -140,4 +140,30 @@ Covers different techniques for creating good training data.
 		- Logs and distributed tracing
 		- Dashboards
 		- Alerts
-		
+
+**[Chapter 9: Continual Learning and Testing in Production](09-continual-learning-and-test-in-production.md)**
+- Continual Learning
+	- Why Continual Learning?
+	- Concept: Stateless retraining VS Stateful training
+	- Concept: feature reuse through log and wait
+	- Continual Learning Challenges
+	    - Fresh data access challenge
+	    - Evaluation Challenge
+	    - Data scaling challenge
+	    - Algorithm challenge
+    - The Four Stages of Continual Learning
+        - Stage 1: Manual, stateless retraining
+        - Stage 2: Fixed schedule automated stateless retraining
+        - Stage 3: Fixed schedule automated stateful training
+        - Stage 4: Continual learning
+    -  How often to Update your models
+        - Measuring the value of data freshness
+        - When should I do model iteration?
+- Testing models in Production
+    - Pre-deployment offline evaluations
+    - Testing in Production Strategies
+        - Shadow Deployment
+        - A/B Testing
+        - Canary Release
+        - Interleaving Experiments
+        - Bandits
