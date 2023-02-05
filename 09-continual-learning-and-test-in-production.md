@@ -242,9 +242,9 @@ Ideally, each team lays out a clear pipeline of how models are evaluated: which 
 	- Recommendation tasks are a typical use case for interleaving. Not all tasks are a good fit for the this strategy.
 	- You want to avoid giving a model an unfair user preference advantage like always taking the top prediction from model A. It should be equally likely that the first slot comes from model A than from model B. The rest of the positions can be filled using the **team-drafting method** (see image).
 
-![A/B testing versus interleaving](09-continual-learning-and-test-in-production.assets/2023-01-31_08-23-05.png)
+![A/B testing versus interleaving](09-continual-learning-and-test-in-production.assets/interleaving-vs-a-b-testing.png)
 
-![team-drafting method to avoid unfair position advantages](09-continual-learning-and-test-in-production.assets/2023-01-31_08-23-27.png)
+![team-drafting method to avoid unfair position advantages](09-continual-learning-and-test-in-production.assets/interleaving-using-team-drafting-algorithm.png)
 
 - **Pros:**
 	- Netflix found experimentally that interleaving reliably identifies the best model with **considerably smaller sample size** compared to traditional A/B testing.
