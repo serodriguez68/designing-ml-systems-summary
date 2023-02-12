@@ -58,7 +58,7 @@ The rest of this section will focus on the **compute layer.**
 	- Cloud compute is elastic but not magical. It doesn't actually have infinite compute power and most cloud providers will impose limits on your account. You can often contact them and get those limits increased.
 - **Early on**, using public clouds tends to give companies higher returns than buying their own storage and compute layers. However, **this becomes less defensible as the company grows**.
 	- Cloud spending accounts for ~50% of the cost of revenue for large companies according to an a16z study.
-	- The high cost of cloud has prompted large companies to start moving their workloads back to their own data centers.  This is called **cloud repatriation.**
+	- The high cost of cloud has prompted large companies to start moving their workloads back to their own data centres.  This is called **cloud repatriation.**
 		- Getting into the cloud is easy but moving away from it is very hard. Cloud repatriation requires non-trivial up-front investment in both hardware and engineering effort.
 
 #### Multi-cloud strategies
@@ -69,9 +69,94 @@ The rest of this section will focus on the **compute layer.**
 - Often multi-cloud just happens by accident because different parts of the organization operate independently and make different choices. 
 	- It is also not uncommon for ML companies to receive investments from parties that have interests in certain clouds and "force" the company to adopt that other cloud, resulting in multi-cloud arrangements.
 
-
-
 ## Layer 4: Development Environment
+
+The dev environment is severely underrated and under invested in industry. Some experts suggest that if you only have time to invest in setting one part of infrastructure well, you should make it the DEV environment as any improvements made here translate directly into productivity.
+
+The DEV environment as a whole is made of the IDE, notebooks, [versioning & experiment tracking tools](06-model-development-and-offline-evaluation.md#Experiment%20tracking%20and%20versioning) and CI/CD tools. As of  2023, companies still use an ad-hoc set of tools for each of these with no strong industry standard in sight.
+
+This section covers 3 aspects the dev environment:
+1. Standardisation of the dev environment.
+2. Notebook support in the DEV environment
+3. Using container technology to bridge the gap between development and production.
+
+### Standardisation of the dev environment
+The dev environment **should be standardised**, if not company-wide, at least team-wide. Non standardisation has several benefits:
+- You don't want to waste time debugging problems that come out of different people having different dependencies installed in their machine.
+- You don't want to take on the IT support work of helping people with different setups figure out what is wrong with their environment.
+- You want to provide new employees as much of a "plug and play" experience with a standard dev environment.
+
+It is generally agreed upon that **tools and packages** should be standardised. However, many companies are **hesitant to standardise the IDE itself**. The IDE setup tends to be a very personal thing and engineers go a long way into customising the IDE to their working style.
+
+The most popular solution for these opposing thoughts is to use **cloud dev environments to take care of the tools and packages standardisation** and allow developers to use whatever IDE they prefer **as long as it is connected to the cloud dev environment**.
+
+#### Moving from a local to a cloud dev environment
+- Common providers of cloud dev environments are Github Codespaces, AWS EC2 instances and GCP instances. 
+- Compared to a local dev environment, a cloud dev environment has these benefits:
+	1. **Cost control:** you may be rightfully worried about what happens if a developer leaves an expensive VM running. Some VMs are very cheap and most cloud providers allow an "auto turn off" option if the VM hast not been used in 30 minutes. Additionally, some providers allow for budget caps and cost monitoring.
+	2. **Get the right size of VM for the right job**: If you are using the cloud instance just for development and then you will run your code in a "jobified" way with other compute resources, then you can use a very small instance just to support your coding. If you are doing heavy exploratory analysis, then you can spin up a more powerful machine. See ["the Compute Layer"](#The%20Compute%20Layer) for more info.
+	3. **IT support becomes easy.** You just have one dev environment setup to troubleshoot.
+	4. Cloud dev is convenient for remote work.
+	5. Cloud environments help with security. If an employee laptop gets stolen, you just revoke access.
+	6. If you already use cloud for production. Using cloud for development will come naturally and it will help you reduce the gap between development and production.
+- Moving to a cloud dev environment requires some initial investments, and you might need to educate your data scientists on cloud hygiene, including establishing secure connections to the cloud, security compliance, or avoiding wasteful cloud usage. However, it will likely save you money in the long run.
+- Not all companies are able to move to cloud dev environment due to restrictions on moving data to cloud providers or [cost concerns like mentioned above.](#Public%20Clouds%20VS%20Private%20Data%20Centers). 
+
+#### IDEs and cloud dev environments
+There are three common ways to approach this:
+1.  Install a terminal-based IDE like VIM directly into their cloud machine.
+	1. **Pros:** everything is in the cloud machine, no networking and SSH connections to deal with.
+	2. **Cons:** terminal-based IDEs require a lot of customisation to make them powerful. This customisation is up to the developer to figure out and it can be hard to port from one VM to another.
+2. Use a browser-based IDE connected to the cloud machine. Some popular options are AWS's Cloud9 and VSCode in the browser.
+	1. **Pros:** 
+		1. Compared to option 1, browser-based IDEs tend to be more powerful and user-friendly and require less customisation out of the box.
+		2. Browser-based options that are offered by cloud providers like AWS cloud 9 or Github Codespaces "just work".
+	2. **Cons:** 
+		1. Browser IDEs tend to be less powerful than native ones.
+		2. They tend to be slower and feel laggy. 
+		3. If you customise them, portability from one VM to another is also a problem. 
+3. Use a local IDE and connect it to the cloud VM using SSH. In this hybrid arrangement, your local IDE is just providing the "editor UI" but the code still runs on the VM. Local VSCode is a very popular option for this at it comes with built-in remote machine connection functionalities.
+	1. **Pros:** 
+		1. You get the full power of an IDE like IntelliJ including code scanning and debugging. 
+		2. Your IDE customisations stay with you in your local computer and you can swap the "compute" VM without losing them.
+	2. **Cons:** 
+		1. It can be tricky to setup. Especially if the VM networks are very locked down.
+		2. You are restricted to IDEs that have built-in remote development functionalities.
+
+### Notebook support in the dev environment
+In addition to the "build code to run in prod" mode of operation that is typical of software engineering, ML engineering has an additional "mode of operation":  exploratory analysis of data and training results. This analysis tends to be ad-hoc using once-off notebooks whose code is typically not meant to be ran in production.
+- \*Note:  there are many companies that use notebooks as the main vessel for production code. This practice will get you off the ground quickly and perhaps it is [everything you need if you use ML for business analytics](10-infrastructure-and-tooling-for-ml-ops.md#Infrastructure%20requirements%20follow%20company%20scale). However, this practice does not scale as your use cases become more complex.
+
+Given this additional "mode of operation", smooth notebook support in your dev environment is a must. In particular you may want to consider:
+- That your dev environment makes it easy to start a notebook in a remote machine with enough infrastructure resources to do the job and with access to all the dependencies needed.
+- That your dev environment makes it easy for data scientist to share notebooks that have already been ran and to collaborate on them.
+	- Notebook version control is still a clunky process. You can check in a notebook into Git, but the diff you will get is an obscure JSON that is hard to follow.
+
+Here are some tools you can use to make notebook dev experience better:
+- **[Papermill](https://github.com/nteract/papermill):** For spawning multiple notebooks with different parameter sets—such as when you want to run different experiments with different sets of parameters and execute them concurrently.
+- **[Commuter](https://github.com/nteract/commuter):** A notebook hub for viewing, finding, and sharing notebooks within an organisation.
+- **[Nbdev](https://nbdev.fast.ai/)**: Write, test, document, and distribute software packages and technical articles — all in one place, your notebook.
+
+
+### From dev to prod: containers
+Replicating a dev environment for multiple engineers and replicating a prod environment for multiple job workers or VMs have the same challenge under the hood: every time you setup a new instance, you will need to setup all the dependencies, tools and configurations on that instance so that it can run your code.
+
+**Container technology** is the key to solve this in an automated way. The most popular container technology currently is **Docker**.  These are some of the core Docker concepts you need to be familiar with:
+1. **Dockerfile:**  step-by-step file on how to re-create an environment in which your code can run: install this package, download this pre-trained model, set up this environment variables, go to this folder. `Building` a Dockerfile gives you a **Docker Image**. You can think of the Dockerfile as the recipe to construct a mold with the Docker Image being the mold.
+	1. You don't have to start your Dockerfile instructions from scratch. You can specify that you want to start from the same point as another Docker Image and then only add some custom instructions on top of that. For example, NVIDIA provides a Docker Image that is already configured to run Tensorflow in a GPU. You can specify that you want to start from that image in your Dockerfile and then you setup your custom Tensorflow code.
+	2. The key command to turn a `Dockerfile` to a **Docker Image** is `docker build`
+2. **Docker Image:** the docker image is a ready-to-run precursor of a **Docker container**. The artefact packages everything it needs to run inside it (e.g. it has already downloaded and installed all the dependencies and code). Docker images are a snapshot of a Dockerfile `build`. Docker Images are use as a "mold" to spin up multiple **Docker containers**.
+3. **Docker container:**  a "running instance" of a docker image.
+	1. The command to manually run an image is `docker run`
+	2. To check which containers are running on your machine use `docker ps`
+4. **Container registry:** Like Github but for Docker images. Container registries are used to share Docker Images with others. The registries can be public (like Docker Hub) or private for only people inside the organisation (like GCP or AWS container registry).
+	1. To pull an image from a registry to your computer use `docker pull`.
+5. **Docker Compose** is a tool for defining and running multi-container Docker applications. It allows you to define the services that make up your application in a single file called `docker-compose.yml`, and then start, monitor and stop all the services with a single command. Docker Compose is a lightweight container orchestrator that can manage containers **ON A SINGLE HOST.**
+6. **Kubernetes /  K8s:** Another orchestrator to manage multi-container applications that run **ON MULTIPLE HOSTS**. K8s also takes care of managing the networking between them.
+	1. K8s is not the most data-science-friendly tool and there are ongoing discussions on how to move data-science workloads away from it.
+
+
+Note that It is common for a single ML project to require multiple types of Docker Images. For example, you may have one image that is built for CPU-only operations like extracting features from training data and a second image that has all the GPU configurations for training. 
 
 ## Layer: 2 Resource Management
 
