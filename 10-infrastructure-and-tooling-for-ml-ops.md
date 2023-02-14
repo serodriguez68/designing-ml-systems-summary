@@ -212,9 +212,35 @@ Both aim to help you run your workflows both in dev and prod.  Not much more is 
 
 ## Layer 3: ML Platform
 
-### Model Store
+The "ML Platform" space is fairly recent and is has been growing rapidly since the early 2020s.  The definition of what constitutes the ML Platform varies largely from company to company. However, broadly speaking, the *ML Platform* is the shared set of tools that different teams can use to deploy and run ML models in production.  
 
+This chapter includes the 3 most common components of an ML Platform: **Model Hosting Services, Model Stores and Feature Stores.**
+
+### Model Hosting Service
+- A model hosting service pushes your model and dependencies to production and exposes models as endpoints.
+	- Other ways of referring to this are: Model Deployment Service, Model Serving Service.
+- This is the most mature of the  ML Platform components.
+- All major cloud providers provide model hosting services. There are also many startups that offer them. 
+	- Examples: AWS Sagemaker, GCP Vertex AI, Azure ML, MLflow Models, Seldon, Cortex, Ray Serve
+- When selecting a model hosting service, consider how easy it is to do **both online predictions and batch predictions**.
+	- All tools will do online predictions. Batch predictions is the tricky part.
+	- Batch predictions is NOT the same as batching online requests together to get more throughput using use hardware acceleration.
+		- More about  [batch predictions here](07-model-deployment-and-prediction-service.md#The%20Four%20Modes%20for%20Serving%20Predictions) 
+		- Ideally your model hosting service allows you to do both batch predictions and batched online requests.
+	- Some companies use different model hosting services for online predictions and for batch predictions. For example Seldon for online and Databricks for batch.
+- When selecting a model hosting service, consider whether the service makes it easy for you to run the types of tests in production that you are interested in. See more  about testing in production  [in chapter 9](09-continual-learning-and-test-in-production.md#Testing%20in%20Production%20Strategies).
+
+### Model Store
+#todo: you are here
 
 ### Feature Stores
 
 ## The Build vs Buy decision
+
+Some things to keep in mind when selecting a component for your ML platform:
+1. Whether the tool works with your cloud provider or allows you to use it on your own data centre
+	1. The tool you select hopefully provides integration with your cloud provider. Nobody likes having to adopt a new cloud provider to get a tool.
+2. Whether it’s open source or a managed service
+	1. Open Source means that you host it yourself and have to worry less about security and privacy. However, you need to maintain it.
+	2. If it is a managed service, there is less maintenance on your part. However, you may need to send some of your data to the provider which might have security and privacy concerns.
+		1. Some managed services allow you to host in virtual private clouds, making security concerns less of a problem.
