@@ -160,7 +160,55 @@ Note that It is common for a single ML project to require multiple types of Dock
 
 ## Layer: 2 Resource Management
 
-### Cron, Schedulers and Orchestrators
+### Some terminology: Cron, Schedulers and Orchestrators
+- **Cron**: run repetitive jobs at fixed times. Cron can only handle **one** job and therefore cannot handle sequences of jobs that are dependent on each other.
+- **Schedulers:**  can handle dependencies. 
+	- They take in a DAG workflow of steps to run. Some steps can be conditional.
+	- They can start the workflow at a scheduled interval or trigger a workflow when an event happens.
+	- Schedulers allow you to specify what to do when a step fails or succeeds. For example, retry 5 times before giving up.
+	- Schedulers scripts often take in parameters about the infrastructure that is needed to run the workflow. They know *what* resources are needed for the workflow but not *where* to get them from.
+	- Designing a general-purpose scheduler yourself is hard since it will need to be able to manage almost any number of concurrent machines and workflows.
+	- Schedulers typically deal with jobs and steps as their main abstractions.
+- **Orchestrators:** they are concerned with *where* to get resources to run a workflow. They deal with lower-than-"job"-level abstractions like machines, instances, clusters and replication.
+	- If Orchestrators notice that the schedulers have more jobs in the pool than available instances, it can increase the number of instances in the pool.
+	- The most well known orchestrator is Kubernetes.
+	- Schedulers typically run on top of orchestrators.
+- **Workflow managers:** typically a higher-level tool that includes a scheduler + orchestrator. Data scientists typically interact with these.
+	- They also take in DAGs of work as their input.
+
+### Managing workflows for Data science
+As of Feb 2023, these are the 5 most common workflow managers for data science: Airflow, Argo, Prefect, Kubeflow and Metaflow. In this section we will briefly explore each.
+
+#### Airflow
+One of the earliest workflow managers.
+- **Pros**
+	- Has an extensive library of operators that allow you to work with different cloud providers, databases, storage options, etc.
+	- It uses Python to configure the workflow as opposed to using YAML or some other declarative language.
+- **Cons**
+	- Airflow is Monolithic, which means it packages the entire workflow into one container. If 2 different steps in your workflow have different infrastructure  requirements, it is not trivial to create separate containers for them.
+	- You can't pass parameters to DAGs in Airflow.
+	- Airflow's DAGs can't automatically create new steps at runtime as needed. They are static.
+
+#### Prefect
+Came as a response to Airflow's drawbacks
+- **Pros**
+	- You can pass parameter to Prefect's workflows
+	- You can dynamically create steps at runtime.
+	- Also uses Python to create the DAGs.
+- **Cons**
+	- Running different steps using different containers is not easy in Prefect. You can do it, but there is some hassle involved.
+
+#### Argo
+Also came as a response to Airflow's drawbacks
+- **Pros**
+	- Every step in an Argo workflow can run in its own container.
+- **Cons**
+	- Workflows are defined en YAML, which gets messy
+	- Argo only runs in Kubernetes, which typically only available in production. If you want to test the workflow locally you have to setup `minikube` in your laptop, which is hard.
+
+#### Kubeflow and Metaflow
+Both aim to help you run your workflows both in dev and prod.  Not much more is mentioned in the book.
+
 
 ## Layer 3: ML Platform
 
