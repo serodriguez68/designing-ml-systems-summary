@@ -231,16 +231,75 @@ This chapter includes the 3 most common components of an ML Platform: **Model Ho
 - When selecting a model hosting service, consider whether the service makes it easy for you to run the types of tests in production that you are interested in. See more  about testing in production  [in chapter 9](09-continual-learning-and-test-in-production.md#Testing%20in%20Production%20Strategies).
 
 ### Model Store
-#todo: you are here
+Model stores are often overlooked because they look simple on the surface: just upload the model blob to S3 and you are done.
+
+In reality, you probably need to store more information along the blob to help you  operate, debug and maintain the model. Here are some elements you may want to store. You can find a more comprehensive list in the [model cards](11-the-human-side-of-ml.md#Create%20model%20cards) section.
+- **Model definition:** details about the architecture of the model. For example layers and loss functions.
+- **Model parameters:** the actual weights of the model. Most frameworks allow you to save both the model definition and the weights together.
+- **Featurize and predict functions:** functions to extract features for a prediction and to process the prediction.
+- **Dependencies:** list of dependencies needed to run your model. These are usually packaged in an image.
+- **Data:** pointers to the data that was used to trained the model. If you use DVC, pointers to the commit that generated the data.
+- **Model generation code:** pointer to the checked in code that was used to generate the model, including the hyperparameters used. Some companies train models using unchecked notebooks. This is not the best practice.
+- **Experiment artefacts:** See [experiment tracking and versioning](06-model-development-and-offline-evaluation.md#Experiment%20tracking%20and%20versioning). 
+- **Tags:** tags to help searching for the model. E.g. team or person that owns the model, business problem that solves. 
+
+Most companies store a subset of these artefacts but not all, and they may store them in different places.
+
+As of 2023 MLFlow is the most popular model store but it still has a long way to go to become a standard. Due to this lack of standards, many companies just build their own.
 
 ### Feature Stores
+"Feature store" is a loaded term that means different things for different people. At its core, there are 3 main problems a feature store helps to address: 1) feature management, 2) feature computation and 3) feature consistency.
+
+#### Feature management
+- It is often the case that features are useful for multiple models.
+- Feature stores can help teams **share and discover** features and **manage roles and sharing settings** of who can see those features.
+
+#### Feature Computation
+- Some features might be expensive to compute so it makes sense to compute them once and cache them for a period of time. This is especially useful if a single feature is used by multiple models.
+- Feature stores can help performing both the feature computation and storing the results of this computation. In this regard, the feature store acts like a data warehouse for features.
+
+#### Feature Consistency
+- Having different pipelines to calculate features from historical data for training and extracting features for inference is a common cause of bugs (more info in [chapter 7](07-model-deployment-and-prediction-service.md#Streaming%20Prediction%20Unifying%20the%20Batch%20Training%20Pipeline%20with%20the%20Streaming%20Serving%20Pipeline)). 
+- Modern feature stores allow you to unify the logic for both batch features and streaming features, ensuring consistency between features at training and inference time.
+
+#### Vendor Examples
+Feature stores started becoming a thing in 2020, so there is significant variability in what different vendors offer.
+- As of July 2022, the most popular open source feature store is Feast. However, Feast focuses on batch features, NOT streaming features.
+- Tecton is a fully managed feature store that promises to handle both batch and streaming features, but their traction is currently slow and they require deep integration.
+- Sagemaker and Databricks also offer their own interpretation of feature stores.
 
 ## The Build vs Buy decision
 
-Some things to keep in mind when selecting a component for your ML platform:
-1. Whether the tool works with your cloud provider or allows you to use it on your own data centre
-	1. The tool you select hopefully provides integration with your cloud provider. Nobody likes having to adopt a new cloud provider to get a tool.
-2. Whether it’s open source or a managed service
-	1. Open Source means that you host it yourself and have to worry less about security and privacy. However, you need to maintain it.
-	2. If it is a managed service, there is less maintenance on your part. However, you may need to send some of your data to the provider which might have security and privacy concerns.
-		1. Some managed services allow you to host in virtual private clouds, making security concerns less of a problem.
+The two extremes in the build vs buy panorama are:
+- Companies that outsource all their ML use cases to providers that provide ML applications end-to-end.  In this case, the only piece of infrastructure they need is moving data from their applications to the vendor and vice-versa.
+- In the other extreme you find companies that handle extremely sensitive data that prevents them for using any type of managed service. In a company like this, you will build and maintain all the infrastructure in-house and maybe you even have your own data centres.
+
+Most companies fall in between these two extremes, with some components being managed and some in-house.
+
+One of the most important jobs of a CTO is vendor/product selection. "Build vs buy" decisions are complex and highly context-dependent. Below you will find some factors to keep in mind when doing a decision like that.
+- Some people think that building is cheaper than buying, but that is not necessarily the case. 
+
+### Factors to consider for build vs buy
+
+#### The stage your company is at
+- In the beginning you might want to leverage vendor solutions to move faster and focus your limited resources on building your core offering.
+- As your use cases grow, vendor costs might become exorbitant and you may be better off building your own solution.
+
+#### What you believe to be the focus or the competitive advantage of your company
+- If the platform component you are considering is something your company needs to become really good at because it is part of your competitive advantage, bias towards building.  If not, bias towards buying.
+- The vast majority of companies outside of the technology sector (retail, banking, manufacturing) tend to bias towards buying as tech itself is not their core offering.
+- Tech companies's competitive advantage tends to be tech itself, so they bias towards building. 
+
+#### The maturity of the available tools
+- If the available vendors are not mature enough for your needs, you may need to build it yourself.
+	- A good option here is to build on top of an [open source](#Is%20open%20source%20an%20option%20for%20you?) solution.
+- If you **are a vendor** selling ML platform components, try to avoid selling to big tech companies because you might get sucked into "integration hell." Their needs might be too mature for your  solution and you will end up playing infinite catchup.
+
+#### Does the tool work with your cloud provider?
+Check if the vendors you prefer works with your cloud provider or allows you to use their service in your own data centre. The tool you select hopefully provides integration with your cloud provider. Nobody likes having to adopt a new cloud provider to get a tool.
+
+#### Is open source an option for you?
+Open Source means that you won't start building from scratch and you will host it yourself  (less about security and privacy). However, you still need to maintain it.
+
+If it is a managed service, there is less maintenance on your part. However, you may need to send some of your data to the provider which might have security and privacy concerns.
+- Some managed services allow you to host in virtual private clouds, making security concerns less of a problem.

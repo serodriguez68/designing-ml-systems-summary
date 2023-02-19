@@ -167,3 +167,30 @@ Covers different techniques for creating good training data.
         - Canary Release
         - Interleaving Experiments
         - Bandits
+
+**[Chapter 10: Infrastructure and tooling for ML Ops](10-infrastructure-and-tooling-for-ml-ops.md)**
+- Infrastructure requirements follow company scale
+- Layer 1: Storage and Compute
+    - The Storage Layer
+    - The Compute Layer
+        - Public Clouds VS Private Data Centers
+        - Multi-cloud strategies
+- Layer 4: Development Environment
+    - Standardisation of the dev environment
+        - Moving from a local to a cloud dev environment
+        - IDEs and cloud dev environments
+    - Notebook support in the dev environment
+    - From dev to prod: containers
+- Layer: 2 Resource Management
+    - Some terminology: Cron, Schedulers and Orchestrators
+    - Managing workflows for Data science
+        - Airflow
+        - Prefect
+        - Argo
+        - Kubeflow and Metaflow
+- Layer 3: ML Platform
+    - Model Hosting Service
+    - Model Store
+    - Feature Stores
+- The Build vs Buy decision
+
