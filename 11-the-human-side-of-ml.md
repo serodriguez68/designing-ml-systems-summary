@@ -12,7 +12,7 @@ We've discussed at length how software systems and ML systems are different. Thi
 - When designing the UX for ML systems you will need to consider the **consistency-accuracy trade-off**:
 	- You can decide to give the most accurate / updated prediction risking an inconsistent behaviour for the user OR you can decide to "remember and fix" what a prediction was using some rule to ensure consistency.
 
-### Challenge 2: Combatting "Mostly Correct" Predictions
+### Challenge 2: Combating "Mostly Correct" Predictions
 - A "mostly correct" prediction is when an ML system produces predictions that are "mostly correct" or "look correct" but you  can't guarantee that they are. 
 - Expert users in the domain will be able to discern and fix what parts of the prediction are wrong. Inexpert users may not have enough knowledge to discern and may incorrectly accept the given prediction as correct.
 - This is very common with Large Language Models (LLMs). For example, you ask an LLM to produce some Java code to solve a problem and the LLM will output some code that looks like plausible Java.
@@ -83,4 +83,109 @@ In the "Netflix working model",  specialists from areas like infrastructure, bui
 
 
 ## A framework for responsible AI
+
+This section contains a framework your company can adopt to ensure that your models are responsible.
+
+Keep into account that:
+- This framework may not be sufficient for all use cases. Use your judgment.
+- There are applications of AI that are unethical no matter the framework you use (e.g. criminal sentence decisions, predictive policing).
+
+### Discover the sources for model biases
+When developing a model, study the different sources of model biases. 
+
+Biases can creep up in any stage of the model creation process. Here is a **non-exhaustive** list of places to check:
+1. **Training data:** if your data is not representative of the real world, the presence or absence of data for certain groups can cause the model to bias against those groups. See [non-probability sampling](04-training-data.md#Non-probability%20Sampling).
+2. **Labelling:** the more human annotators rely on subjectivity to annotate, the more biases you will get. Think about ways to ensure that annotators are following a standard guideline and  measuring the quality of the produced labels.
+3. **Feature engineering:** Does your model use any features that can cause it to learn biases? Using features related to ethnicity, gender, race, sexual orientation, religion, etc is usually not recommended because of the high risk of biases. Using features that allow the model to infer these indirectly is also risky. See [invariance tests](06-model-development-and-offline-evaluation.md#Evaluating%20fairness%20with%20invariance%20tests) and [slice-based tests](06-model-development-and-offline-evaluation.md#Evaluating%20performance%20and%20fairness%20with%20slice-based%20evaluation%20tests).
+4. **Model's objective:** Does your objective allow for fairness for all users or is it introducing a bias towards favouring majority groups or majority classes? 
+	1. For handling majority classes see [Class Imbalance](04-training-data.md#Class%20Imbalance)
+	2. If invariance tests and slice-based tests flag different results for different groups, you may want to reconsider your model framing or objective.
+5. **Evaluation:** is your evaluation process introducing biases?
+	1. If your evaluation is done using human evaluation, your model might be receiving bias through the humans (see labelling above).
+	2. If your evaluation can be done automatically your model might get biased if you don't do [invariance tests](06-model-development-and-offline-evaluation.md#Evaluating%20fairness%20with%20invariance%20tests) and [slice-based tests](06-model-development-and-offline-evaluation.md#Evaluating%20performance%20and%20fairness%20with%20slice-based%20evaluation%20tests) or if you ignore certain groups during the tests.
+
+### Understand the limitations of the data-driven approach
+A data-driven approach to fairness and responsible AI is necessary **but it is not sufficient.**
+
+Model developers need to understand at a human level how the lives of the users at the other side of the predictions will be impacted by them. By doing this you reduce the risk of having blind spots that come from relying too much on data.
+
+### Understand the fairness trade-offs that happen when optimising your model for different properties
+
+Often ML literature assumes that when you are making model changes to optimise for a property, all other properties remain static. This is not true. 
+
+This assumption is particularly dangerous in the responsible AI space because many of the trade-offs **are yet to be discovered.**
+
+Here we cover two example trade-offs that have been documented in literature: 
+- Privacy vs accuracy trade-off
+- Compression vs fairness-trade-off
+If you are working with datasets that are **differentially private** or models that **are being compressed**, make sure you invest resources in studying these trade-offs to avoid unintended harm.
+
+#### Privacy vs accuracy trade-off
+- The higher the level of privacy the model provides, usually means the lower the model accuracy.
+- The accuracy of differential privacy model drops much more for underrepresented classes and subgroups.
+
+#### Compression vs accuracy fairness trade-off
+- The idea of model compression is reducing model size at minimal accuracy cost. This topic is explained in [chapter 7](07-model-deployment-and-prediction-service.md#Faster%20Inference%20through%20Model%20Compression).
+- It is not guaranteed that your compression will "spread out" the accuracy loss uniformly across all classes and subgroups. Compression can disproportionally affect underrepresented subgroups in the dataset.
+- Not all compression techniques have the same level of disparate impact. Pruning incurs in far higher disparate impact than quantisation.
+- Once again, [slice-based tests](06-model-development-and-offline-evaluation.md#Evaluating%20performance%20and%20fairness%20with%20slice-based%20evaluation%20tests) are a great tool to study the impact of compression.
+
+### Act early
+
+The earlier in the development cycle of an ML system that you can start thinking about how this system will affect the life of users and what biases your system might have, the cheaper it will be to address these biases.
+
 ### Create model cards
+- Model cards are short documents that accompany trained models with info about how they were trained and evaluated. They also include context like intended use and known limitations. A model card template is shown below.
+- The goal of model cards is to standardise ethical practice and allow stakeholders to reason about candidate models not only from the lens of performance, but also from the lens of responsible AI.
+- Model cards are especially important in cases where the people who deploy and use the model are not the same as the people that developed it.
+- Creating and updating model cards manually can be quite tedious.  It is important to invest in tools that can automatically generate as much of the model card as possible. Tensorflow, Metaflow and scikit-learn all have features for model cards. Some companies build their own model-card software.
+	- Chip thinks model stores will soon evolve to support and generate model cards natively.
+
+#### Example model card
+- **Model details**: Basic info 
+	- Person, team or organisation developing the model
+	- Model date
+	- Model version
+	- Model type
+	- Info about training algorithm, parameters, fairness constraints and features
+	- Resources for more information (e.g papers, blog posts)
+	- Citation details
+	- License
+	- Where to send questions or comments about the model
+- **Indented use**
+	- Primary intended users
+	- Out-of-scope use cases
+- **Factors**: factors could include demographic or phenotypic groups, environmental conditions, technical attributes or others
+	- #todo: not clear to me what this is.
+	- Relevant factors and evaluation factors
+- **Metrics:** should be chosen to reflect potential real-world impacts of the model
+	- Model performance measures
+	- Decision thresholds
+	- Variation approaches
+- **Evaluation data:** details on the dataset(s) used for the quantitative analysis reported in the card.
+	- Datasets
+	- Motivation
+	- Preprocessing
+- **Training data:** If possible, mirror the evaluation data section above.
+	- In practice, it is not always possible to include training data into the model card.
+	- If including data is not possible, at least include distributions over various factors in the training datasets
+- **Quantitative analyses**
+	- Unitary results
+	- Intersectional / slice-based results
+- **Ethical considerations**
+- **Caveats and recommendations**
+
+### Establish company processes for mitigating biases
+- Building responsible AI is a complex process. Ad-hoc processes leave a lot of room for error. It is important for companies to establish systematic processes for making their ML models responsible.
+- Some companies do third-party audits
+- Resources:
+	- [Google's Responsible AI practices](https://ai.google/responsibilities/responsible-ai-practices/?category=fairness)
+	- [AI Fairness 360](https://aif360.mybluemix.net/):  open source library with algorithms, metrics and explanations to help mitigate bias in models AND datasets.
+
+### Stay up-to-date on responsible AI
+Responsible AI is a fast moving field with new sources of bias constantly being discovered and new techniques developed.
+Some resources to help you stay up to date:
+- [ACM FAccT Conference](https://facctconference.org/index.html)
+- [Partnership on AI]()
+- [Alan Turing Institute's Fairness, Transparency and Privacy Group](https://www.turing.ac.uk/research/interest-groups/fairness-transparency-privacy)
+- [AI Now Institute](https://ainowinstitute.org/)

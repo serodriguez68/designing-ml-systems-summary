@@ -15,7 +15,7 @@ Sampling happens in different steps of the workflow. For example:
 3. Sampling from all possible events that flow though you ML system for monitoring purposes.
 
 ## Non-probability Sampling
-Non-probability sampling is a bad idea. The samples selected are not representative of the real-world data and therefore are riddled with selection biases. This will result in your ML models performing poorly.
+Non-probability sampling is a bad idea. The samples selected are not representative of the real-world data and therefore are riddled with selection biases. This will result in your ML models performing poorly and being unfair.
 
 We describe some of the common non-probability sampling methods used so that you can identify them and avoid them.
 
@@ -226,7 +226,7 @@ If you don't do any tweaking, ML algorithms don't work as well in **heavily** im
 2. Your algorithms can get stuck during training in non-optimal solutions that exploit simple heuristics like always returning the majority class. 
 3. The default behaviour of an ML algorithm is to treat a misclassification of any class equally with no way to encode class importance during training. This is problematic for tasks where the misclassification of a minority class can have catastrophic consequences (e.g. cancer diagnosis in chest x-rays).
 
-Some tasks are more sensitive to class imbalance than others. In general, the more complex the problem, the more sensitive it is to imbalance. The opposite is also true, simple linearly separable problems are not sensitive to class imbalance. 
+Some tasks are more sensitive to class imbalance than others. In general, the more complex the model, the more sensitive it is to imbalance. The opposite is also true, simple linearly separable problems are not sensitive to class imbalance. 
 
 ## Handling class imbalance
 Some might argue that you shouldn’t try to “fix” class imbalance if that’s how the data looks in the real world. They argue that a model should learn to handle that imbalance. However, developing a model that does a good job under these conditions can be challenging, **so we still have to rely on special training techniques**.

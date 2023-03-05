@@ -194,3 +194,29 @@ Covers different techniques for creating good training data.
     - Feature Stores
 - The Build vs Buy decision
 
+**[Chapter 11: The human side of ml](11-the-human-side-of-ml.md)**
+- User experience in ML
+    - Challenge 1: Ensuring User Experience Consistency
+    - Challenge 2: Combating "Mostly Correct" Predictions
+    - Challenge 3: Smooth Failing
+- Team Structured
+    - Don't disregard SMEs
+    - Ownership boundaries for data scientists
+        - Approach 1: Have a separate team to manage production
+        - Approach 2: Data scientists own the entire end-to-end process
+        - Wait, if both approaches suck, what do we do?
+- A framework for responsible AI
+    - Discover the sources for model biases
+    - Understand the limitations of the data-driven approach
+    - Understand the fairness trade-offs that happen when optimising your model for different properties
+        - Privacy vs accuracy trade-off
+        - Compression vs accuracy fairness trade-off
+    - Act early
+    - Create model cards
+    - Establish company processes for mitigating biases
+    - Stay up-to-date on responsible AI
+
+
+
+
+

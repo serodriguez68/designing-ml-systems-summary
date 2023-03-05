@@ -101,6 +101,8 @@ There are 3 ways you can reduce inference latency if needed:
 
 Originally, model compression was developed  to help make models smaller so they could fit  on edge devices. However, making models smaller typically makes them run faster so compression is also now being used to speed up inference in non-edge scenarios.
 
+Note that compression also has ripple effects in the fairness space. Go to [chapter 11](11-the-human-side-of-ml.md#Compression%20vs%20fairness%20trade-off) for more info.
+
 There are 4 common techniques for model compression:
 1. Low-rank factorization
 2. Knowledge distillation
